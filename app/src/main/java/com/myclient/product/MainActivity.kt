@@ -1,12 +1,12 @@
-package com.myclient
+package com.myclient.product
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
@@ -15,13 +15,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.myclient.Constants
+import com.myclient.R
 import com.myclient.cart.CartFragment
 import com.myclient.databinding.ActivityMainBinding
 import com.myclient.entities.Product
-import com.myclient.product.OnProductListener
-import com.myclient.product.ProductAdapter
 
-class MainActivity : AppCompatActivity(), OnProductListener {
+class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -181,6 +181,17 @@ class MainActivity : AppCompatActivity(), OnProductListener {
 
     override fun onClick(product: Product) {
 
+    }
+
+    //obtener el carrito desde la main
+    override fun getProductsCart(): MutableList<Product> {
+        val productCartList = mutableListOf<Product>()
+        (1..7).forEach {
+            val product = Product(it.toString(), "Producto $it", "This product is $it",
+                "", it, 2.0 * it)
+            productCartList.add(product)
+        }
+        return productCartList
     }
 
 }

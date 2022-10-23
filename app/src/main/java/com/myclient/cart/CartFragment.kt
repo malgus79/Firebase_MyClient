@@ -11,6 +11,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.myclient.R
 import com.myclient.databinding.FragmentCartBinding
 import com.myclient.entities.Product
+import com.myclient.product.MainAux
 
 class CartFragment : BottomSheetDialogFragment(), OnCartListener {
 
@@ -41,9 +42,9 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
    */
 
             setupRecyclerView()
-//            setupButtons()
+            setupButtons()
 
-//            getProducts()
+            getProducts()
 
             return bottomSheetDialog
         }
@@ -59,30 +60,31 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
                 adapter = this@CartFragment.adapter
             }
 
-            (1..5).forEach {
+            /*(1..5).forEach {
                 val product = Product(it.toString(), "Producto $it", "This product is $it",
                     "", it, 2.0*it)
                 adapter.add(product)
-            }
+            }*/
         }
     }
 
-//    private fun setupButtons(){
-//        binding?.let {
-//            it.ibCancel.setOnClickListener {
-//                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-//            }
+    //boton de cerrar del bottomSheet
+    private fun setupButtons(){
+        binding?.let {
+            it.ibCancel.setOnClickListener {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            }
 //            it.efab.setOnClickListener {
 //                requestOrder()
 //            }
-//        }
-//    }
+        }
+    }
 
-//    private fun getProducts(){
-//        (activity as? MainAux)?.getProductsCart()?.forEach {
-//            adapter.add(it)
-//        }
-//    }
+    private fun getProducts(){
+        (activity as? MainAux)?.getProductsCart()?.forEach {
+            adapter.add(it)
+        }
+    }
 
 //    private fun requestOrder(){
 //        dismiss()
