@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.myclient.cart.CartFragment
 import com.myclient.databinding.ActivityMainBinding
 import com.myclient.entities.Product
 import com.myclient.product.OnProductListener
@@ -68,6 +69,7 @@ class MainActivity : AppCompatActivity(), OnProductListener {
 
         configAuth()
         configRecyclerView()
+        configButtons()
 
     }
 
@@ -115,6 +117,14 @@ class MainActivity : AppCompatActivity(), OnProductListener {
             layoutManager = GridLayoutManager(this@MainActivity, 3,
                 GridLayoutManager.HORIZONTAL, false)
             adapter = this@MainActivity.adapter
+        }
+    }
+
+    //config btn carrito
+    private fun configButtons(){
+        binding.btnViewCart.setOnClickListener {
+            val fragment = CartFragment()
+            fragment.show(supportFragmentManager.beginTransaction(), CartFragment::class.java.simpleName)
         }
     }
 
