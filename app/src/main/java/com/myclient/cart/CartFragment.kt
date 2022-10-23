@@ -8,20 +8,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.myclient.R
 import com.myclient.databinding.FragmentCartBinding
+import com.myclient.entities.Product
 
-class CartFragment : BottomSheetDialogFragment()
-//    , OnCartListener
-{
+class CartFragment : BottomSheetDialogFragment(), OnCartListener {
 
     private var binding: FragmentCartBinding? = null
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
 
-//    private lateinit var adapter: ProductCartAdapter
+    private lateinit var adapter: ProductCartAdapter
 
 //    protected var totalPrice = 0.0
-
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -41,7 +40,7 @@ class CartFragment : BottomSheetDialogFragment()
  fragment.show(fragmentManager!!.beginTransaction(), BottomSheetFragment.TAG)
    */
 
-//            setupRecyclerView()
+            setupRecyclerView()
 //            setupButtons()
 
 //            getProducts()
@@ -51,22 +50,22 @@ class CartFragment : BottomSheetDialogFragment()
         return super.onCreateDialog(savedInstanceState)
     }
 
-//    private fun setupRecyclerView() {
-//        binding?.let {
-//            adapter = ProductCartAdapter(mutableListOf(), this)
-//
-//            it.recyclerView.apply {
-//                layoutManager = LinearLayoutManager(context)
-//                adapter = this@CartFragment.adapter
-//            }
-//
-//            /*(1..5).forEach {
-//                val product = Product(it.toString(), "Producto $it", "This product is $it",
-//                    "", it, 2.0*it)
-//                adapter.add(product)
-//            }*/
-//        }
-//    }
+    private fun setupRecyclerView() {
+        binding?.let {
+            adapter = ProductCartAdapter(mutableListOf(), this)
+
+            it.recyclerView.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = this@CartFragment.adapter
+            }
+
+            (1..5).forEach {
+                val product = Product(it.toString(), "Producto $it", "This product is $it",
+                    "", it, 2.0*it)
+                adapter.add(product)
+            }
+        }
+    }
 
 //    private fun setupButtons(){
 //        binding?.let {
@@ -97,14 +96,14 @@ class CartFragment : BottomSheetDialogFragment()
         binding = null
     }
 
-//    override fun setQuantity(product: Product) {
+    override fun setQuantity(product: Product) {
 //        adapter.update(product)
-//    }
+    }
 
-//    override fun showTotal(total: Double) {
+    override fun showTotal(total: Double) {
 //        totalPrice = total
 //        binding?.let {
 //            it.tvTotal.text = getString(R.string.prodcut_full_cart, total)
 //        }
-//    }
+    }
 }
