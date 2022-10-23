@@ -12,17 +12,22 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.myclient.databinding.ActivityMainBinding
+import com.myclient.entities.Product
+import com.myclient.product.OnProductListener
+import com.myclient.product.ProductAdapter
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnProductListener {
 
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var authStateListener: FirebaseAuth.AuthStateListener
 
-//    private lateinit var adapter: ProductAdapter
+    private lateinit var adapter: ProductAdapter
 
     private lateinit var firestoreListener: ListenerRegistration
 
@@ -94,22 +99,22 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         firebaseAuth.addAuthStateListener(authStateListener)
-//        configFirestoreRealTime()  //se ejecuta unicamente en onResume
+        configFirestoreRealTime()  //se ejecuta unicamente en onResume
     }
 
     override fun onPause() {
         super.onPause()
         firebaseAuth.removeAuthStateListener(authStateListener)
-//        firestoreListener.remove()  //quitar el listener cada vez que se pause la app
+        firestoreListener.remove()  //quitar el listener cada vez que se pause la app
     }
 
     //config recyclerView
     private fun configRecyclerView(){
-//        adapter = ProductAdapter(mutableListOf(), this)
+        adapter = ProductAdapter(mutableListOf(), this)
         binding.recyclerView.apply {
             layoutManager = GridLayoutManager(this@MainActivity, 3,
                 GridLayoutManager.HORIZONTAL, false)
-//            adapter = this@MainActivity.adapter
+            adapter = this@MainActivity.adapter
         }
     }
 
@@ -138,5 +143,37 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    //config Firestore en tiempo real
+    private fun configFirestoreRealTime() {
+        val db = FirebaseFirestore.getInstance()
+        val productRef = db.collection(Constants.COLL_PRODUCTS)
+
+        //listener: captar los cambios
+        firestoreListener = productRef.addSnapshotListener { snapshots, error ->
+            if (error != null){
+                Toast.makeText(this, "Error al consultar datos.", Toast.LENGTH_SHORT).show()
+                return@addSnapshotListener
+            }
+            //en caso de que no exista error
+            for (snapshot in snapshots!!.documentChanges){
+                val product = snapshot.document.toObject(Product::class.java)
+                product.id = snapshot.document.id
+                when(snapshot.type){
+                    DocumentChange.Type.ADDED -> adapter.add(product)
+                    DocumentChange.Type.MODIFIED -> adapter.update(product)
+                    DocumentChange.Type.REMOVED -> adapter.delete(product)
+                }
+            }
+        }
+    }
+
+    override fun onClick(product: Product) {
+
+    }
+
+    override fun onLongClick(product: Product) {
+
     }
 }
