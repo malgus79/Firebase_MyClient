@@ -41,6 +41,7 @@ class DetailFragment : Fragment() {
                 it.tvName.text = product.name
                 it.tvDescription.text = product.description
                 it.tvQuantity.text = getString(R.string.detail_quantity, product.quantity)
+                it.tvTotalPrice.text = getString(R.string.detail_total_price, product.totalPrice(), product.newQuantity, product.price)
 //                setNewQuantity(product)
 
                 Glide.with(this)
