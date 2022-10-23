@@ -19,6 +19,7 @@ import com.myclient.Constants
 import com.myclient.R
 import com.myclient.cart.CartFragment
 import com.myclient.databinding.ActivityMainBinding
+import com.myclient.detail.DetailFragment
 import com.myclient.entities.Product
 
 class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
@@ -31,6 +32,9 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
     private lateinit var adapter: ProductAdapter
 
     private lateinit var firestoreListener: ListenerRegistration
+
+    private var productSelected: Product? = null
+    private val productCartList = mutableListOf<Product>()
 
     //esperar el resultado
     private val resultLauncher =
@@ -180,7 +184,24 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
     }
 
     override fun onClick(product: Product) {
+//        val index = productCartList.indexOf(product)
+//        if (index != -1){
+//            productSelected = productCartList[index]
+//        } else {
+//            productSelected = product
+//        }
 
+        productSelected = product
+
+        //instanciar el detail fragment
+        val fragment = DetailFragment()
+        supportFragmentManager
+            .beginTransaction()
+            .add(R.id.containerMain, fragment)
+            .addToBackStack(null)
+            .commit()
+
+        showButton(false)
     }
 
     //obtener el carrito desde la main
@@ -194,4 +215,10 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
         return productCartList
     }
 
+    override fun getProductSelected(): Product? = productSelected
+
+    //btn de ver carrito
+    override fun showButton(isVisible: Boolean) {
+        binding.btnViewCart.visibility = if (isVisible) View.VISIBLE else View.GONE
+    }
 }
