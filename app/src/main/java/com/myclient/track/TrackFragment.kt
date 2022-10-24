@@ -57,7 +57,7 @@ class TrackFragment : Fragment() {
 
             getOrderInRealtime(it.id)  //obtener orden en tiempo real
 
-//            setupActionBar()
+            setupActionBar()
 //            configAnalytics()
         }
     }
@@ -98,13 +98,14 @@ class TrackFragment : Fragment() {
         }
     }
 
-//    private fun setupActionBar(){
-//        (activity as? AppCompatActivity)?.let {
-//            it.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-//            it.supportActionBar?.title = getString(R.string.track_title)
-//            setHasOptionsMenu(true)
-//        }
-//    }
+    //cambiar el titulo de la pantalla de OrderActivity y FragmentTrack
+    private fun setupActionBar(){
+        (activity as? AppCompatActivity)?.let {
+            it.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            it.supportActionBar?.title = getString(R.string.track_title)
+            setHasOptionsMenu(true)
+        }
+    }
 
 //    private fun configAnalytics(){
 //        firebaseAnalytics = Firebase.analytics
@@ -113,24 +114,26 @@ class TrackFragment : Fragment() {
 //        }
 //    }
 
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        if (item.itemId == android.R.id.home){
-//            activity?.onBackPressed()
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
+    //volver atras desde el "Rastero" hacia el "Historial"
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home){
+            activity?.onBackPressed()
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
     }
 
-//    override fun onDestroy() {
-//        (activity as? AppCompatActivity)?.let {
-//            it.supportActionBar?.setDisplayHomeAsUpEnabled(false)
-//            it.supportActionBar?.title = getString(R.string.order_title)
-//            setHasOptionsMenu(false)
-//        }
-//        super.onDestroy()
-//    }
+    //volver atras los cambios en setupActionBar()
+    override fun onDestroy() {
+        (activity as? AppCompatActivity)?.let {
+            it.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+            it.supportActionBar?.title = getString(R.string.order_title)
+            setHasOptionsMenu(false)
+        }
+        super.onDestroy()
+    }
 }
