@@ -222,7 +222,21 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
         } else {
             productCartList.add(product)  //sino -> agregarlo por primera vez
         }
+        //depsues de actualizar el listado -> actualizar total
+        updateTotal()
+    }
 
-//        updateTotal()
+    //actualizar el total del carrito
+    override fun updateTotal() {
+        var total = 0.0
+        productCartList.forEach { product ->
+            total += product.totalPrice()
+        }
+
+        if (total == 0.0){
+            binding.tvTotal.text = getString(R.string.product_empty_cart)
+        } else {
+            binding.tvTotal.text = getString(R.string.product_full_cart, total)
+        }
     }
 }
