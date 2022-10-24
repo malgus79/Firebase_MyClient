@@ -30,7 +30,7 @@ class ProductCartAdapter(private val productList: MutableList<Product>,
         holder.setListener(product)
 
         holder.binding.tvName.text = product.name
-        holder.binding.tvQuantity.text = product.quantity.toString()
+        holder.binding.tvQuantity.text = product.newQuantity.toString()
 
         Glide.with(context)
             .load(product.imgUrl)

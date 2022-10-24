@@ -205,20 +205,24 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
     }
 
     //obtener el carrito desde la main
-    override fun getProductsCart(): MutableList<Product> {
-        val productCartList = mutableListOf<Product>()
-        (1..7).forEach {
-            val product = Product(it.toString(), "Producto $it", "This product is $it",
-                "", it, price = 2.0 * it)
-            productCartList.add(product)
-        }
-        return productCartList
-    }
+    override fun getProductsCart(): MutableList<Product> = productCartList
 
     override fun getProductSelected(): Product? = productSelected
 
     //btn de ver carrito
     override fun showButton(isVisible: Boolean) {
         binding.btnViewCart.visibility = if (isVisible) View.VISIBLE else View.GONE
+    }
+
+    //agregar producto al carrito
+    override fun addProductToCart(product: Product) {
+//        val index = productCartList.indexOf(product)
+//        if (index != -1){
+//            productCartList.set(index, product)
+//        } else {
+            productCartList.add(product)
+//        }
+
+//        updateTotal()
     }
 }

@@ -87,18 +87,20 @@ class DetailFragment : Fragment() {
                 }
                 binding.efab.setOnClickListener {
                     product.newQuantity = binding.etNewQuantity.text.toString().toInt()
-//                    addToCart(product)
+                    addToCart(product)
                 }
             }
         }
     }
 
-//    private fun addToCart(product: Product) {
-//        (activity as? MainAux)?.let {
-//            it.addProductToCart(product)
-//            activity?.onBackPressed()
-//        }
-//    }
+    //agregar al carrito
+    private fun addToCart(product: Product) {
+        (activity as? MainAux)?.let {
+            it.addProductToCart(product)
+            //finalizar el fragmento
+            activity?.onBackPressed()
+        }
+    }
 
     override fun onDestroyView() {
         (activity as? MainAux)?.showButton(true)
