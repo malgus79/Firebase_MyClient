@@ -4,12 +4,12 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_margin="@dimen/common_padding_min">
+    android:layout_margin="@dimen/common_margin_min">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/common_padding_min">
+        android:layout_margin="@dimen/common_margin_min">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnTrack"

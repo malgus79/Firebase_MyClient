@@ -34,8 +34,8 @@ class OrderAdaper(private val orderList: MutableList<Order>, private val listene
 
         holder.setListener(order)
 
-        //holder.binding.tvId.text = context.getString(R.string.order_id, order.id)
-        holder.binding.tvId.text = order.id
+        holder.binding.tvId.text = context.getString(R.string.order_id, order.id)
+        //holder.binding.tvId.text = order.id
 
         var names = ""
         order.products.forEach{
@@ -43,12 +43,13 @@ class OrderAdaper(private val orderList: MutableList<Order>, private val listene
         }
         holder.binding.tvProductNames.text = names.dropLast(2)
 
-        //holder.binding.tvTotalPrice.text = context.getString(R.string.product_full_cart, order.totalPrice)
-        holder.binding.tvTotalPrice.text = order.totalPrice.toString()
+        holder.binding.tvTotalPrice.text = context.getString(R.string.product_full_cart, order.totalPrice)
+        //holder.binding.tvTotalPrice.text = order.totalPrice.toString()
 
 //        val index = aKeys.indexOf(order.status)
 //        val statusStr = if (index != -1) aValues[index] else context.getString(R.string.order_status_unknown)
 //        holder.binding.tvStatus.text = context.getString(R.string.order_status, statusStr)
+        holder.binding.tvStatus.text = context.getString(R.string.order_status, "en espera")
     }
 
     override fun getItemCount(): Int = orderList.size
