@@ -21,7 +21,7 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
 
     private lateinit var adapter: ProductCartAdapter
 
-//    protected var totalPrice = 0.0
+    private var totalPrice = 0.0
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -102,10 +102,11 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
 //        adapter.update(product)
     }
 
+    //actualizar el total del carrito en el fragment (lo detona el adapter)
     override fun showTotal(total: Double) {
-//        totalPrice = total
-//        binding?.let {
-//            it.tvTotal.text = getString(R.string.prodcut_full_cart, total)
-//        }
+        totalPrice = total
+        binding?.let {
+            it.tvTotal.text = getString(R.string.product_full_cart, total)
+        }
     }
 }

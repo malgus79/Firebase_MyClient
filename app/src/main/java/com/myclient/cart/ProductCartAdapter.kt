@@ -48,7 +48,7 @@ class ProductCartAdapter(private val productList: MutableList<Product>,
         if (!productList.contains(product)){
             productList.add(product)
             notifyItemInserted(productList.size - 1)
-//            calcTotal()
+            calcTotal()
         } else {
             update(product)
         }
@@ -59,7 +59,7 @@ class ProductCartAdapter(private val productList: MutableList<Product>,
         if (index != -1){
             productList.set(index, product)
             notifyItemChanged(index)
-//            calcTotal()
+            calcTotal()
         }
     }
 
@@ -68,17 +68,18 @@ class ProductCartAdapter(private val productList: MutableList<Product>,
         if (index != -1){
             productList.removeAt(index)
             notifyItemRemoved(index)
-//            calcTotal()
+            calcTotal()
         }
     }
 
-//    private fun calcTotal(){
-//        var result = 0.0
-//        for (product in productList){
-//            result += product.totalPrice()
-//        }
-//        listener.showTotal(result)
-//    }
+    //calcular el total del carrito
+    private fun calcTotal(){
+        var result = 0.0
+        for (product in productList){
+            result += product.totalPrice()
+        }
+        listener.showTotal(result)
+    }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view){
         val binding = ItemProductCartBinding.bind(view)
