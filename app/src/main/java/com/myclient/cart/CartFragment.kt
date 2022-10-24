@@ -1,6 +1,7 @@
 package com.myclient.cart
 
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.myclient.R
 import com.myclient.databinding.FragmentCartBinding
 import com.myclient.entities.Product
+import com.myclient.order.OrderActivity
 import com.myclient.product.MainAux
 
 class CartFragment : BottomSheetDialogFragment(), OnCartListener {
@@ -91,6 +93,7 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
     private fun requestOrder(){
         dismiss()  //quitar el fragment
         (activity as? MainAux)?.clearCart()
+        startActivity(Intent(context, OrderActivity::class.java))
     }
 
     //volver a binding = null (buenas practicas)
