@@ -84,16 +84,20 @@ class ProductCartAdapter(private val productList: MutableList<Product>,
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view){
         val binding = ItemProductCartBinding.bind(view)
 
-        //sumar cantidad
+        //incrementar cantidad
         fun setListener(product: Product){
             binding.ibSum.setOnClickListener {
-//                product.newQuantity += 1
-                listener.setQuantity(product)
+                if (product.newQuantity < product.quantity) {
+                    product.newQuantity += 1
+                    listener.setQuantity(product)
+                }
             }
-            //restat cantidad
+            //disminuir cantidad
             binding.ibSub.setOnClickListener {
-//                product.newQuantity -= 1
-                listener.setQuantity(product)
+                if (product.newQuantity > 0) {
+                    product.newQuantity -= 1
+                    listener.setQuantity(product)
+                }
             }
         }
     }

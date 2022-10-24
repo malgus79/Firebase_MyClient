@@ -93,13 +93,14 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
 
     //volver a binding = null (buenas practicas)
     override fun onDestroyView() {
-//        (activity as? MainAux)?.updateTotal()
+        (activity as? MainAux)?.updateTotal()  //para refrescar el total en la mainActivity
         super.onDestroyView()
         binding = null
     }
 
+    //obtener las cantidades del carrito (para modif sus cantitades desde ahi)
     override fun setQuantity(product: Product) {
-//        adapter.update(product)
+        adapter.update(product)
     }
 
     //actualizar el total del carrito en el fragment (lo detona el adapter)
