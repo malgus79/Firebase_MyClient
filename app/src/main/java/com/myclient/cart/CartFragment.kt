@@ -108,6 +108,7 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
             val products = hashMapOf<String, ProductOrder>()
             adapter.getProducts().forEach { product ->
                 products.put(product.id!!, ProductOrder(product.id!!, product.name!!, product.newQuantity))
+                //products.put(product.id!!, ProductOrder(product.id!!, product.name!!, product.newQuantity, product.partnerId))
             }
 
             val order = Order(clientId = myUser.uid, products = products, totalPrice = totalPrice, status = 1)

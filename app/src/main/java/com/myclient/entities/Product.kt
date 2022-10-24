@@ -8,7 +8,9 @@ data class Product(@get:Exclude var id: String? = null,
                    var imgUrl: String? = null,
                    var quantity: Int = 0,
                    @get:Exclude var newQuantity: Int = 1,
-                   var price: Double = 0.0){
+                   var price: Double = 0.0,
+                   //var partnerId:String = ""
+){
 
     fun totalPrice(): Double = newQuantity * price
 

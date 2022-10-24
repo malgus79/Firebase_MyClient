@@ -4,7 +4,9 @@ import com.google.firebase.firestore.Exclude
 
 data class ProductOrder(@get:Exclude var id: String = "",
                         var name: String = "",
-                        var quantity: Int = 0){
+                        var quantity: Int = 0,
+                        //var partnerId: String = ""
+){
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
