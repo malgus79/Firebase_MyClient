@@ -60,12 +60,12 @@ class DetailFragment : Fragment() {
         binding?.let {
             it.etNewQuantity.setText(product.newQuantity.toString())
 
-            it.tvTotalPrice.text = getString(R.string.detail_total_price, product.totalPrice(),
-                product.newQuantity, product.price)
-
-//            val newQuantityStr = getString(R.string.detail_total_price, product.totalPrice(),
+//            it.tvTotalPrice.text = getString(R.string.detail_total_price, product.totalPrice(),
 //                product.newQuantity, product.price)
-//            it.tvTotalPrice.text = HtmlCompat.fromHtml(newQuantityStr, HtmlCompat.FROM_HTML_MODE_LEGACY)
+
+            val newQuantityStr = getString(R.string.detail_total_price, product.totalPrice(),
+                product.newQuantity, product.price)
+            it.tvTotalPrice.text = HtmlCompat.fromHtml(newQuantityStr, HtmlCompat.FROM_HTML_MODE_LEGACY)
         }
     }
 
