@@ -5,13 +5,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.myclient.Constants
 import com.myclient.R
 import com.myclient.databinding.FragmentCartBinding
+import com.myclient.entities.Order
 import com.myclient.entities.Product
+import com.myclient.entities.ProductOrder
 import com.myclient.order.OrderActivity
 import com.myclient.product.MainAux
 
@@ -91,9 +97,50 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
 
     //cerrar el fragmento y limpiar el listado
     private fun requestOrder(){
-        dismiss()  //quitar el fragment
-        (activity as? MainAux)?.clearCart()
-        startActivity(Intent(context, OrderActivity::class.java))
+        //extraer el usuario autenticado para usar su uid
+        val user = FirebaseAuth.getInstance().currentUser
+        user?.let { myUser ->
+
+            //obtener el nuevo array de ProductOrder
+            val products = hashMapOf<String, ProductOrder>()
+            adapter.getProducts().forEach { product ->
+                products.put(product.id!!, ProductOrder(product.id!!, product.name!!, product.newQuantity))
+            }
+
+            val order = Order(clientId = myUser.uid, products = products, totalPrice = totalPrice, status = 1)
+
+            val db = FirebaseFirestore.getInstance()
+            db.collection(Constants.COLL_REQUESTS)
+                .add(order)
+                .addOnSuccessListener {
+                    //cerrar fragmento y limpiar carrito y lanzar orderAct
+                    dismiss()  //quitar el fragment
+                    (activity as? MainAux)?.clearCart()
+                    startActivity(Intent(context, OrderActivity::class.java))
+
+                    Toast.makeText(activity, "Compra realizada.", Toast.LENGTH_SHORT).show()
+//                    //Analytics
+//                    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.ADD_PAYMENT_INFO){
+//                        val products = mutableListOf<Bundle>()
+//                        order.products.forEach {
+//                            if (it.value.quantity > 5) {
+//                                val bundle = Bundle()
+//                                bundle.putString("id_product", it.key)
+//                                products.add(bundle)
+//                            }
+//                        }
+//                        param(FirebaseAnalytics.Param.QUANTITY, products.toTypedArray())
+//                    }
+//                    firebaseAnalytics.setUserProperty(Constants.USER_PROP_QUANTITY,
+//                        if (products.size > 0) "con_mayoreo" else "sin_mayoreo")
+                }
+                .addOnFailureListener {
+                    Toast.makeText(activity, "Error al comprar.", Toast.LENGTH_SHORT).show()
+                }
+//                .addOnCompleteListener {
+//                    enableUI(true)
+//                }
+        }
     }
 
     //volver a binding = null (buenas practicas)
