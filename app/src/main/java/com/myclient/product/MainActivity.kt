@@ -239,4 +239,9 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
             binding.tvTotal.text = getString(R.string.product_full_cart, total)
         }
     }
+
+    //limpiar carrito
+    override fun clearCart() {
+        productCartList.clear()
+    }
 }
