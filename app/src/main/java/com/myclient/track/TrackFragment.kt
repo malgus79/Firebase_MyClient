@@ -55,7 +55,7 @@ class TrackFragment : Fragment() {
         order?.let {
             updateUI(it)  //que ckeckBox seleccionar
 
-//            getOrderInRealtime(it.id)
+            getOrderInRealtime(it.id)  //obtener orden en tiempo real
 
 //            setupActionBar()
 //            configAnalytics()
@@ -74,26 +74,29 @@ class TrackFragment : Fragment() {
         }
     }
 
-//    private fun getOrderInRealtime(orderId: String){
-//        val db = FirebaseFirestore.getInstance()
-//
-//        val orderRef = db.collection(Constants.COLL_REQUESTS).document(orderId)
-//        orderRef.addSnapshotListener { snapshot, error ->
-//            if (error != null){
-//                Toast.makeText(activity, "Error al consultar esta orden.", Toast.LENGTH_SHORT).show()
-//                return@addSnapshotListener
-//            }
-//
-//            if (snapshot != null && snapshot.exists()){
-//                val order = snapshot.toObject(Order::class.java)
-//                order?.let {
-//                    it.id = snapshot.id
-//
-//                    updateUI(it)
-//                }
-//            }
-//        }
-//    }
+    //obtener orden en tiempo real
+    private fun getOrderInRealtime(orderId: String){
+        val db = FirebaseFirestore.getInstance()
+
+        val orderRef = db.collection(Constants.COLL_REQUESTS).document(orderId)
+        orderRef.addSnapshotListener { snapshot, error ->
+            //si existe error
+            if (error != null){
+                Toast.makeText(activity, "Error al consultar esta orden.", Toast.LENGTH_SHORT).show()
+                return@addSnapshotListener
+            }
+            //sino hubo error -> proseguir
+            if (snapshot != null && snapshot.exists()){
+                val order = snapshot.toObject(Order::class.java)
+                order?.let {
+                    it.id = snapshot.id
+
+                    //que ckeckBox seleccionar
+                    updateUI(it)
+                }
+            }
+        }
+    }
 
 //    private fun setupActionBar(){
 //        (activity as? AppCompatActivity)?.let {
@@ -117,10 +120,10 @@ class TrackFragment : Fragment() {
 //        return super.onOptionsItemSelected(item)
 //    }
 
-//    override fun onDestroyView() {
-//        super.onDestroyView()
-//        binding = null
-//    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
+    }
 
 //    override fun onDestroy() {
 //        (activity as? AppCompatActivity)?.let {
