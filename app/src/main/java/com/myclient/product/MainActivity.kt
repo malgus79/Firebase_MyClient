@@ -184,14 +184,13 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
     }
 
     override fun onClick(product: Product) {
-//        val index = productCartList.indexOf(product)
-//        if (index != -1){
-//            productSelected = productCartList[index]
-//        } else {
-//            productSelected = product
-//        }
-
-        productSelected = product
+        //primero validar si existe ese producto en el carrito actual
+        val index = productCartList.indexOf(product)
+        if (index != -1){  //significa que hay que actualizar -> porque si existe un index
+            productSelected = productCartList[index]
+        } else {
+            productSelected = product  //sino -> agregarlo por primera vez
+        }
 
         //instanciar el detail fragment
         val fragment = DetailFragment()
@@ -216,12 +215,13 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
 
     //agregar producto al carrito
     override fun addProductToCart(product: Product) {
-//        val index = productCartList.indexOf(product)
-//        if (index != -1){
-//            productCartList.set(index, product)
-//        } else {
-            productCartList.add(product)
-//        }
+        //primero validar si existe ese producto en el carrito actual
+        val index = productCartList.indexOf(product)
+        if (index != -1){  //significa que hay que actualizar -> porque si existe un index
+            productCartList.set(index, product)
+        } else {
+            productCartList.add(product)  //sino -> agregarlo por primera vez
+        }
 
 //        updateTotal()
     }
