@@ -9,18 +9,18 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.myclient.Constants
+import com.myclient.R
 import com.myclient.databinding.ActivityOrderBinding
 import com.myclient.entities.Order
+import com.myclient.track.TrackFragment
 
-class OrderActivity : AppCompatActivity(), OnOrderListener
-//    , OrderAux
-{
+class OrderActivity : AppCompatActivity(), OnOrderListener, OrderAux {
 
     private lateinit var binding: ActivityOrderBinding
 
     private lateinit var adapter: OrderAdaper
 
-//    private lateinit var orderSelected: Order
+    private lateinit var orderSelected: Order
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,15 +96,17 @@ class OrderActivity : AppCompatActivity(), OnOrderListener
 //        }
     }
 
+    //lanzar el fragmentTrack
     override fun onTrack(order: Order) {
-//        orderSelected = order
-//
-//        val fragment = TrackFragment()
-//        supportFragmentManager
-//            .beginTransaction()
-//            .add(R.id.containerMain, fragment)
-//            .addToBackStack(null)
-//            .commit()
+        //orden que envia el adaptador
+        orderSelected = order
+
+        val fragment = TrackFragment()
+        supportFragmentManager
+            .beginTransaction()
+            .add(R.id.containerMain, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     override fun onStartChat(order: Order) {
@@ -119,5 +121,6 @@ class OrderActivity : AppCompatActivity(), OnOrderListener
 //            .commit()
     }
 
-//    override fun getOrderSelected(): Order = orderSelected
+    //obtener la orden seleccionada
+   override fun getOrderSelected(): Order = orderSelected
 }
