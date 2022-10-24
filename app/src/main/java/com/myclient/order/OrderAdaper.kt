@@ -14,13 +14,14 @@ class OrderAdaper(private val orderList: MutableList<Order>, private val listene
 
     private lateinit var context: Context
 
-//    private val aValues: Array<String> by lazy {
-//        context.resources.getStringArray(R.array.status_value)
-//    }
+    //manejar los estados de la orden
+    private val aValues: Array<String> by lazy {
+        context.resources.getStringArray(R.array.status_value)
+    }
 
-//    private val aKeys: Array<Int> by lazy {
-//        context.resources.getIntArray(R.array.status_key).toTypedArray()
-//    }
+    private val aKeys: Array<Int> by lazy {
+        context.resources.getIntArray(R.array.status_key).toTypedArray()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         context = parent.context
@@ -46,10 +47,9 @@ class OrderAdaper(private val orderList: MutableList<Order>, private val listene
         holder.binding.tvTotalPrice.text = context.getString(R.string.product_full_cart, order.totalPrice)
         //holder.binding.tvTotalPrice.text = order.totalPrice.toString()
 
-//        val index = aKeys.indexOf(order.status)
-//        val statusStr = if (index != -1) aValues[index] else context.getString(R.string.order_status_unknown)
-//        holder.binding.tvStatus.text = context.getString(R.string.order_status, statusStr)
-        holder.binding.tvStatus.text = context.getString(R.string.order_status, "en espera")
+        val index = aKeys.indexOf(order.status)
+        val statusStr = if (index != -1) aValues[index] else context.getString(R.string.order_status_unknown)
+        holder.binding.tvStatus.text = context.getString(R.string.order_status, statusStr)
     }
 
     override fun getItemCount(): Int = orderList.size
