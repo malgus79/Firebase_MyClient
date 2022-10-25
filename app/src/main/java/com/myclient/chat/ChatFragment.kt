@@ -2,10 +2,8 @@ package com.myclient.chat
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -16,7 +14,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.myclient.Constants
-import com.myclient.R
 import com.myclient.databinding.FragmentChatBinding
 import com.myclient.entities.Message
 import com.myclient.entities.Order
@@ -68,7 +65,21 @@ class ChatFragment : Fragment(), OnChatListener {
             //una vez ubicado en la ruta -> se consume lo que esta dentro
             val childListener = object  : ChildEventListener {
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                    val message = snapshot.getValue(Message::class.java)
+                    getMessage(snapshot)?.let {
+                        adapter.add(it)
+                        //poner el scrol en la ultima posicion para tener visible siempre el ultimo mensaje
+                        binding?.recyclerView?.scrollToPosition(adapter.itemCount - 1)
+                    }
+                }
+
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                    getMessage(snapshot)?.let {
+                        adapter.update(it)
+                    }
+                }
+
+                override fun onChildRemoved(snapshot: DataSnapshot) {
+                    /*val message = snapshot.getValue(Message::class.java)
                     message?.let { message ->
                         snapshot.key?.let {
                             message.id = it
@@ -76,74 +87,50 @@ class ChatFragment : Fragment(), OnChatListener {
                         FirebaseAuth.getInstance().currentUser?.let { user ->
                             message.myUid = user.uid
                         }
-                        adapter.add(message)
-                        //poner el scrol en la ultima posicion para tener visible siempre el ultimo mensaje
-                        binding?.recyclerView?.scrollToPosition(adapter.itemCount - 1)
+                        adapter.delete(message)
+                    }*/
+                    getMessage(snapshot)?.let {
+                        adapter.delete(it)
                     }
-
-
-//                    getMessage(snapshot)?.let {
-//                        adapter.add(it)
-//                        binding?.recyclerView?.scrollToPosition(adapter.itemCount - 1)
-//                    }
                 }
 
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-//                    getMessage(snapshot)?.let {
-//                        adapter.update(it)
-//                    }
-                }
-
-                override fun onChildRemoved(snapshot: DataSnapshot) {
-//                    /*val message = snapshot.getValue(Message::class.java)
-//                    message?.let { message ->
-//                        snapshot.key?.let {
-//                            message.id = it
-//                        }
-//                        FirebaseAuth.getInstance().currentUser?.let { user ->
-//                            message.myUid = user.uid
-//                        }
-//                        adapter.delete(message)
-//                    }*/
-//                    getMessage(snapshot)?.let {
-//                        adapter.delete(it)
-//                    }
-                }
-
+                //no aplica
                 override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
 
                 override fun onCancelled(error: DatabaseError) {
-//                    binding?.let {
-//                        Snackbar.make(it.root, "Error al cargar chat.", Snackbar.LENGTH_LONG).show()
-//                    }
+                    binding?.let {
+                        Snackbar.make(it.root, "Error al cargar chat.", Snackbar.LENGTH_LONG).show()
+                    }
                 }
             }
             chatRef.addChildEventListener(childListener)
         }
     }
 
-//    private fun getMessage(snapshot: DataSnapshot): Message? {
-//        snapshot.getValue(Message::class.java)?.let { message ->
-//            snapshot.key?.let {
-//                message.id = it
-//            }
-//            FirebaseAuth.getInstance().currentUser?.let { user ->
-//                message.myUid = user.uid
-//            }
-//            return  message
-//        }
-//        return null
-//    }
+    private fun getMessage(snapshot: DataSnapshot): Message? {
+        //si la transformacion del objeto message es correcta -> da un message
+        snapshot.getValue(Message::class.java)?.let { message ->
+            snapshot.key?.let {
+                message.id = it
+            }
+            FirebaseAuth.getInstance().currentUser?.let { user ->
+                message.myUid = user.uid
+            }
+            return message
+        }
+        //en caso de que exista un error -> retornar null
+        return null
+    }
 
-    private fun setupRecyclerView(){
+    private fun setupRecyclerView() {
         adapter = ChatAdapter(mutableListOf(), this)
         binding?.let {
             it.recyclerView.apply {
                 layoutManager = LinearLayoutManager(context)
                     //hacer que se vea el chat de abajo para arriba
                     .also {
-                    it.stackFromEnd = true
-                }
+                        it.stackFromEnd = true
+                    }
                 adapter = this@ChatFragment.adapter
             }
         }
