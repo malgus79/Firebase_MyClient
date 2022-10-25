@@ -2,8 +2,10 @@ package com.myclient.chat
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -14,6 +16,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.myclient.Constants
+import com.myclient.R
 import com.myclient.databinding.FragmentChatBinding
 import com.myclient.entities.Message
 import com.myclient.entities.Order
@@ -53,8 +56,8 @@ class ChatFragment : Fragment(), OnChatListener {
         order = (activity as? OrderAux)?.getOrderSelected()
         order?.let {
             //iniciar la consulta en realtime database
-//            setupActionBar()
-            setupRealtimeDatabase()
+            setupActionBar()  //titulo
+            setupRealtimeDatabase()  //chat
         }
     }
 
@@ -178,48 +181,52 @@ class ChatFragment : Fragment(), OnChatListener {
         }
     }
 
-//    private fun setupActionBar(){
-//        (activity as? AppCompatActivity)?.let {
-//            it.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-//            it.supportActionBar?.title = getString(R.string.chat_title)
-//            setHasOptionsMenu(true)
-//        }
-//    }
+    //titulo del fragment Chat
+    private fun setupActionBar(){
+        (activity as? AppCompatActivity)?.let {
+            it.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            it.supportActionBar?.title = getString(R.string.chat_title)
+            setHasOptionsMenu(true)
+        }
+    }
 
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        if (item.itemId == android.R.id.home){
-//            activity?.onBackPressed()
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
+    //hacer visible la flecha de retroceso
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home){
+            activity?.onBackPressed()
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
     }
 
-//    override fun onDestroy() {
-//        (activity as? AppCompatActivity)?.let {
-//            it.supportActionBar?.setDisplayHomeAsUpEnabled(false)
-//            it.supportActionBar?.title = getString(R.string.order_title)
-//            setHasOptionsMenu(false)
-//        }
-//        super.onDestroy()
-//    }
+    //liberar el titulo
+    override fun onDestroy() {
+        (activity as? AppCompatActivity)?.let {
+            it.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+            it.supportActionBar?.title = getString(R.string.order_title)
+            setHasOptionsMenu(false)
+        }
+        super.onDestroy()
+    }
 
+    //eliminar mensaje
     override fun deleteMessage(message: Message) {
-//        order?.let {
-//            val database = Firebase.database
-//            val messageRef = database.getReference(Constants.PATH_CHATS).child(it.id).child(message.id)
-//            messageRef.removeValue { error, ref ->
-//                binding?.let {
-//                    if (error != null){
-//                        Snackbar.make(it.root, "Error borrar mensaje.", Snackbar.LENGTH_LONG).show()
-//                    } else {
-//                        Snackbar.make(it.root, "Mensaje borrado.", Snackbar.LENGTH_LONG).show()
-//                    }
-//                }
-//            }
-//        }
+        order?.let {
+            val database = Firebase.database
+            val messageRef = database.getReference(Constants.PATH_CHATS).child(it.id).child(message.id)
+            messageRef.removeValue { error, ref ->
+                binding?.let {
+                    if (error != null){
+                        Snackbar.make(it.root, "Error borrar mensaje.", Snackbar.LENGTH_LONG).show()
+                    } else {
+                        Snackbar.make(it.root, "Mensaje borrado.", Snackbar.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
     }
 }
