@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.messaging.FirebaseMessaging
 import com.myclient.Constants
 import com.myclient.R
 import com.myclient.cart.CartFragment
@@ -109,6 +110,23 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
         configAuth()
         configRecyclerView()
         configButtons()
+
+
+       /* //fcm
+        //extraer el token de forma manual y enviarlo al servidor
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful){
+                val token = task.result
+                val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+                preferences.edit {
+                    putString(Constants.PROP_TOKEN, token)
+                        .apply()
+                }
+                Log.i("get token", token.toString())
+            } else {
+                Log.i("get token fail", task.exception.toString())
+            }
+        }*/
 
     }
 
