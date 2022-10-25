@@ -2,12 +2,15 @@ package com.myclient.product
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
@@ -49,6 +52,36 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                 val user = FirebaseAuth.getInstance().currentUser
                 if (user != null) {
                     Toast.makeText(this, "Bienvenido", Toast.LENGTH_SHORT).show()
+
+                    //extraer el token desde preferences
+                    val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+                    val token = preferences.getString(Constants.PROP_TOKEN, null)
+
+                    //si le token no es null
+                    token?.let {
+                        val db = FirebaseFirestore.getInstance()
+                        val tokenMap = hashMapOf(Pair(Constants.PROP_TOKEN, token))
+
+                        //crear una nueva coleccion
+                        db.collection(Constants.COLL_USERS)
+                                //idi del usuario
+                            .document(user.uid)
+                                //1 solo usuario puede tener la app en mas de 1 dispositivo -> notificamos a todos los dispositivos
+                                //por eso se crea otra colleccion correspondientes a los dispositivos del mismo usuario
+                            .collection(Constants.COLL_TOKENS)
+                            .add(tokenMap)
+                            .addOnSuccessListener {
+                                Log.i("registered token", token)
+                                //limpiar las preferencias
+                                preferences.edit {
+                                    putString(Constants.PROP_TOKEN, null)
+                                        .apply()
+                                }
+                            }
+                            .addOnFailureListener {
+                                Log.i("no registered token", token)
+                            }
+                    }
                 }
             } else {
                 //se pulso atras
