@@ -10,6 +10,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.myclient.Constants
 import com.myclient.R
+import com.myclient.chat.ChatFragment
 import com.myclient.databinding.ActivityOrderBinding
 import com.myclient.entities.Order
 import com.myclient.track.TrackFragment
@@ -109,16 +110,17 @@ class OrderActivity : AppCompatActivity(), OnOrderListener, OrderAux {
             .commit()
     }
 
+    //iniciar el fragment del chat
     override fun onStartChat(order: Order) {
-//        orderSelected = order
-//
-//        val fragment = ChatFragment()
-//
-//        supportFragmentManager
-//            .beginTransaction()
-//            .add(R.id.containerMain, fragment)
-//            .addToBackStack(null)
-//            .commit()
+        orderSelected = order
+
+        val fragment = ChatFragment()
+
+        supportFragmentManager
+            .beginTransaction()
+            .add(R.id.containerMain, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     //obtener la orden seleccionada
