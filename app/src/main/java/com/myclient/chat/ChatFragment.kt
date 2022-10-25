@@ -47,7 +47,7 @@ class ChatFragment : Fragment(), OnChatListener {
 
         getOrder()
 
-//        setupRecyclerView()
+        setupRecyclerView()
 //        setupButtons()
     }
 
@@ -120,22 +120,24 @@ class ChatFragment : Fragment(), OnChatListener {
 //        return null
 //    }
 
-//    private fun setupRecyclerView(){
-//        adapter = ChatAdapter(mutableListOf(), this)
-//        binding?.let {
-//            it.recyclerView.apply {
-//                layoutManager = LinearLayoutManager(context).also {
-//                    it.stackFromEnd = true
-//                }
-//                adapter = this@ChatFragment.adapter
-//            }
-//        }
-//
-//        /*(1..20).forEach {
-//            adapter.add(Message(it.toString(), if(it%4 == 0)"Hola, ¿Como estas?, Hola, ¿Como estas?, Hola, ¿Como estas?" else "Hola, ¿Como estas?",
-//                if(it%3 == 0) "tu" else "yo", "yo"))
-//        }*/
-//    }
+    private fun setupRecyclerView(){
+        adapter = ChatAdapter(mutableListOf(), this)
+        binding?.let {
+            it.recyclerView.apply {
+                layoutManager = LinearLayoutManager(context)
+                    //hacer que se vea el chat de abajo para arriba
+                    .also {
+                    it.stackFromEnd = true
+                }
+                adapter = this@ChatFragment.adapter
+            }
+        }
+
+        (1..20).forEach {
+            adapter.add(Message(it.toString(), if(it%4 == 0)"Hola, ¿Como estas?, Hola, ¿Como estas?, Hola, ¿Como estas?" else "Hola, ¿Como estas?",
+                if(it%3 == 0) "tu" else "yo", "yo"))
+        }
+    }
 
 //    private fun setupButtons(){
 //        binding?.let { binding ->
