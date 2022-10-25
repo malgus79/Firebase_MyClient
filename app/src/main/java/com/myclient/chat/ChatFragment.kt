@@ -62,24 +62,39 @@ class ChatFragment : Fragment(), OnChatListener {
     }
 
     private fun setupRealtimeDatabase() {
-//        order?.let {
-//            val database = Firebase.database
-//            val chatRef = database.getReference(Constants.PATH_CHATS).child(it.id)
-//            val childListener = object  : ChildEventListener {
-//                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+        order?.let {
+            val database = Firebase.database
+            val chatRef = database.getReference(Constants.PATH_CHATS).child(it.id)
+            //una vez ubicado en la ruta -> se consume lo que esta dentro
+            val childListener = object  : ChildEventListener {
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                    val message = snapshot.getValue(Message::class.java)
+                    message?.let { message ->
+                        snapshot.key?.let {
+                            message.id = it
+                        }
+                        FirebaseAuth.getInstance().currentUser?.let { user ->
+                            message.myUid = user.uid
+                        }
+                        adapter.add(message)
+                        //poner el scrol en la ultima posicion para tener visible siempre el ultimo mensaje
+                        binding?.recyclerView?.scrollToPosition(adapter.itemCount - 1)
+                    }
+
+
 //                    getMessage(snapshot)?.let {
 //                        adapter.add(it)
 //                        binding?.recyclerView?.scrollToPosition(adapter.itemCount - 1)
 //                    }
-//                }
-//
-//                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                }
+
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
 //                    getMessage(snapshot)?.let {
 //                        adapter.update(it)
 //                    }
-//                }
-//
-//                override fun onChildRemoved(snapshot: DataSnapshot) {
+                }
+
+                override fun onChildRemoved(snapshot: DataSnapshot) {
 //                    /*val message = snapshot.getValue(Message::class.java)
 //                    message?.let { message ->
 //                        snapshot.key?.let {
@@ -93,18 +108,18 @@ class ChatFragment : Fragment(), OnChatListener {
 //                    getMessage(snapshot)?.let {
 //                        adapter.delete(it)
 //                    }
-//                }
-//
-//                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-//
-//                override fun onCancelled(error: DatabaseError) {
+                }
+
+                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+
+                override fun onCancelled(error: DatabaseError) {
 //                    binding?.let {
 //                        Snackbar.make(it.root, "Error al cargar chat.", Snackbar.LENGTH_LONG).show()
 //                    }
-//                }
-//            }
-//            chatRef.addChildEventListener(childListener)
-//        }
+                }
+            }
+            chatRef.addChildEventListener(childListener)
+        }
     }
 
 //    private fun getMessage(snapshot: DataSnapshot): Message? {
