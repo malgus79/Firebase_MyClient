@@ -48,7 +48,7 @@ class ChatFragment : Fragment(), OnChatListener {
         getOrder()
 
         setupRecyclerView()
-//        setupButtons()
+        setupButtons()
     }
 
     //obtener la orden
@@ -133,44 +133,48 @@ class ChatFragment : Fragment(), OnChatListener {
             }
         }
 
-        (1..20).forEach {
+        /*(1..20).forEach {
             adapter.add(Message(it.toString(), if(it%4 == 0)"Hola, ¿Como estas?, Hola, ¿Como estas?, Hola, ¿Como estas?" else "Hola, ¿Como estas?",
                 if(it%3 == 0) "tu" else "yo", "yo"))
+        }*/
+    }
+
+    private fun setupButtons(){
+        binding?.let { binding ->
+            binding.ibSend.setOnClickListener {
+                sendMessage()
+            }
         }
     }
 
-//    private fun setupButtons(){
-//        binding?.let { binding ->
-//            binding.ibSend.setOnClickListener {
-//                sendMessage()
-//            }
-//        }
-//    }
+    //enviar mensaje
+    private fun sendMessage() {
+        binding?.let { binding ->
+            order?.let {
+                //instancia a la bd
+                val database = Firebase.database
+                //referencia de la ruta, para crear un chat por cada pedido
+                val chatRef = database.getReference(Constants.PATH_CHATS).child(it.id)
+                //extraer nuestro usuario con el uid
+                val user = FirebaseAuth.getInstance().currentUser
+                user?.let {
+                    val message = Message(message = binding.etMessage.text.toString().trim(),
+                        sender = it.uid)
 
-//    private fun sendMessage() {
-//        binding?.let { binding ->
-//            order?.let {
-//                val database = Firebase.database
-//                val chatRef = database.getReference(Constants.PATH_CHATS).child(it.id)
-//                val user = FirebaseAuth.getInstance().currentUser
-//                user?.let {
-//                    val message = Message(message = binding.etMessage.text.toString().trim(),
-//                        sender = it.uid)
-//
-//                    binding.ibSend.isEnabled = false
-//
-//                    chatRef.push().setValue(message)
-//                        .addOnSuccessListener {
-//                            binding.etMessage.setText("")
-//                        }
-//                        .addOnCompleteListener {
-//                            binding.ibSend.isEnabled = true
-//                        }
-//                }
-//            }
-//        }
-//
-//    }
+                    //inabilitar para que no se envien mas de 1 mensaje
+                    binding.ibSend.isEnabled = false
+
+                    chatRef.push().setValue(message)
+                        .addOnSuccessListener {
+                            binding.etMessage.setText("")
+                        }
+                        .addOnCompleteListener {
+                            binding.ibSend.isEnabled = true
+                        }
+                }
+            }
+        }
+    }
 
 //    private fun setupActionBar(){
 //        (activity as? AppCompatActivity)?.let {
