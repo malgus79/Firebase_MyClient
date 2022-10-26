@@ -112,7 +112,9 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
         configButtons()
 
 
-       /* //fcm
+/**
+
+        //fcm
         //extraer el token de forma manual y enviarlo al servidor
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful){
@@ -126,7 +128,9 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
             } else {
                 Log.i("get token fail", task.exception.toString())
             }
-        }*/
+        }
+
+*/
 
     }
 

@@ -88,7 +88,7 @@ class FCMService : FirebaseMessagingService() {
             .setContentText(notification.body)
             .setAutoCancel(true)  //eliminar la notificacion luego de darle click
             .setSound(defaultSoundUri)
-//            .setColor(ContextCompat.getColor(this, R.color.amber_500_dark))
+            .setColor(ContextCompat.getColor(this, R.color.amber_500_dark))
             .setContentIntent(pendingIntent)
 //            .setStyle(NotificationCompat.BigTextStyle()
 //                .bigText(notification.body))
