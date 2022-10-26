@@ -8,6 +8,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.myclient.Constants
@@ -22,7 +25,7 @@ class TrackFragment : Fragment() {
 
     private var order: Order? = null
 
-//    private lateinit var firebaseAnalytics: FirebaseAnalytics
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,7 +61,7 @@ class TrackFragment : Fragment() {
             getOrderInRealtime(it.id)  //obtener orden en tiempo real
 
             setupActionBar()
-//            configAnalytics()
+            configAnalytics()
         }
     }
 
@@ -107,12 +110,14 @@ class TrackFragment : Fragment() {
         }
     }
 
-//    private fun configAnalytics(){
-//        firebaseAnalytics = Firebase.analytics
-//        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW){
-//            param(FirebaseAnalytics.Param.METHOD, "check_track")
-//        }
-//    }
+    //analytics
+    private fun configAnalytics(){
+        firebaseAnalytics = Firebase.analytics
+        //si entro a ver el track del pedido
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW){
+            param(FirebaseAnalytics.Param.METHOD, "check_track")
+        }
+    }
 
     //volver atras desde el "Rastero" hacia el "Historial"
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

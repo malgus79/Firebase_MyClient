@@ -15,10 +15,14 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.myclient.Constants
 import com.myclient.R
@@ -41,6 +45,8 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
 
     private var productSelected: Product? = null
     private val productCartList = mutableListOf<Product>()
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     //esperar el resultado
     private val resultLauncher =
@@ -110,6 +116,7 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
         configAuth()
         configRecyclerView()
         configButtons()
+        configAnalytics()
 
 
 /**
@@ -187,6 +194,11 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
             val fragment = CartFragment()
             fragment.show(supportFragmentManager.beginTransaction(), CartFragment::class.java.simpleName)
         }
+    }
+
+    //config analytics
+    private fun configAnalytics(){
+        firebaseAnalytics = Firebase.analytics
     }
 
     //crear el menu: cerrar sesion
@@ -271,6 +283,11 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
             .commit()
 
         showButton(false)
+        //analytics
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM){
+            param(FirebaseAnalytics.Param.ITEM_ID, product.id!!)
+            param(FirebaseAnalytics.Param.ITEM_NAME, product.name!!)
+        }
     }
 
     //obtener el carrito desde la main
