@@ -75,10 +75,10 @@ class ProfileFragment : Fragment() {
     //obtener el usuario
     private fun getUser() {
         binding?.let { binding ->
-            //obtener el usuario logieado
+            //obtener el usuario logieado (no null)
             FirebaseAuth.getInstance().currentUser?.let { user ->
                 binding.etFullName.setText(user.displayName)
-                //binding.etPhotoUrl.setText(user.photoUrl.toString())
+                binding.etPhotoUrl.setText(user.photoUrl.toString())
 
                 Glide.with(this)
                     .load(user.photoUrl)
@@ -89,37 +89,39 @@ class ProfileFragment : Fragment() {
                     .circleCrop()
                     .into(binding.ibProfile)
 
-//                setupActionBar()
+                setupActionBar()
             }
         }
     }
 
-//    private fun setupActionBar(){
-//        (activity as? AppCompatActivity)?.let {
-//            it.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-//            it.supportActionBar?.title = getString(R.string.profile_title)
-//            setHasOptionsMenu(true)
-//        }
-//    }
+    //config title
+    private fun setupActionBar(){
+        (activity as? AppCompatActivity)?.let {
+            it.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            it.supportActionBar?.title = getString(R.string.profile_title)
+            setHasOptionsMenu(true)
+        }
+    }
 
     private fun configButtons() {
-//        binding?.let { binding->
+        binding?.let { binding ->
 //            binding.ibProfile.setOnClickListener {
 //                openGallery()
 //            }
-//
-//            binding.btnUpdate.setOnClickListener {
-//                binding.etFullName.clearFocus()
-//                //binding.etPhotoUrl.clearFocus()
+
+            binding.btnUpdate.setOnClickListener {
+                binding.etFullName.clearFocus()
+                binding.etPhotoUrl.clearFocus()
 //                FirebaseAuth.getInstance().currentUser?.let { user ->
 //                    if (photoSelectedUri == null) {
 //                        updateUserProfile(binding, user, Uri.parse(""))
+                updateUserProfile(binding)
 //                    } else {
 //                        uploadReducedImage(user)
 //                    }
 //                }
-//            }
-//        }
+            }
+        }
     }
 
 //    private fun openGallery() {
@@ -127,23 +129,34 @@ class ProfileFragment : Fragment() {
 //        resultLauncher.launch(intent)
 //    }
 
+    //actualizar perfil
+    private fun updateUserProfile(binding: FragmentProfileBinding) {
 //    private fun updateUserProfile(binding: FragmentProfileBinding, user: FirebaseUser, uri: Uri) {
+
+        //para poder editar tanto el nombre como la foto de perfil
+        FirebaseAuth.getInstance().currentUser?.let { user ->
+            val profileUpdated = UserProfileChangeRequest.Builder()
+                .setDisplayName(binding.etFullName.text.toString().trim())
+                .setPhotoUri(Uri.parse(binding.etPhotoUrl.text.toString().trim()))
+                .build()
+
 //        val profileUpdated = UserProfileChangeRequest.Builder()
 //            .setDisplayName(binding.etFullName.text.toString().trim())
 //            .setPhotoUri(uri)
 //            .build()
-//
-//        user.updateProfile(profileUpdated)
-//            .addOnSuccessListener {
-//                Toast.makeText(activity, "Usuario actualizado.", Toast.LENGTH_SHORT).show()
-//                (activity as? MainAux)?.updateTitle(user)
-//                activity?.onBackPressed()
-//            }
-//            .addOnFailureListener {
-//                Toast.makeText(activity, "Error al actualizar el usuario.", Toast.LENGTH_SHORT)
-//                    .show()
-//            }
-//    }
+
+            user.updateProfile(profileUpdated)
+                .addOnSuccessListener {
+                    Toast.makeText(activity, "Usuario actualizado.", Toast.LENGTH_SHORT).show()
+                    (activity as? MainAux)?.updateTitle(user)
+                    activity?.onBackPressed()  //para cerrar el fragmento
+                }
+                .addOnFailureListener {
+                    Toast.makeText(activity, "Error al actualizar el usuario.", Toast.LENGTH_SHORT)
+                        .show()
+                }
+        }
+    }
 
 //    private fun uploadReducedImage(user: FirebaseUser){
 //        val profileRef = FirebaseStorage.getInstance().reference.child(user.uid)
@@ -212,24 +225,27 @@ class ProfileFragment : Fragment() {
 //        return Bitmap.createScaledBitmap(image, width, height, true)
 //    }
 
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        if (item.itemId == android.R.id.home){
-//            activity?.onBackPressed()
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
+    //accion del retroceso (flecha atras en el titulo)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home){
+            activity?.onBackPressed()
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
+    //para liberar recursos anulamos a binding
     override fun onDestroyView() {
-//        (activity as? MainAux)?.showButton(true)
+        (activity as? MainAux)?.showButton(true)
         super.onDestroyView()
         binding = null
     }
 
-//    override fun onDestroy() {
-//        (activity as? AppCompatActivity)?.let {
-//            it.supportActionBar?.setDisplayHomeAsUpEnabled(false)
-//            setHasOptionsMenu(false)
-//        }
-//        super.onDestroy()
-//    }
+    //para resetear el titulo
+    override fun onDestroy() {
+        (activity as? AppCompatActivity)?.let {
+            it.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+            setHasOptionsMenu(false)
+        }
+        super.onDestroy()
+    }
 }

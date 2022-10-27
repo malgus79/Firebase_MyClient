@@ -23,6 +23,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -152,7 +153,8 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
         authStateListener = FirebaseAuth.AuthStateListener { auth ->
             //usuario autenticado
             if (auth.currentUser != null) {
-                supportActionBar?.title = auth.currentUser?.displayName
+                //supportActionBar?.title = auth.currentUser?.displayName
+                updateTitle(auth.currentUser!!)
                 binding.llProgress.visibility = View.GONE
                 binding.nsvProducts.visibility = View.VISIBLE
             } else {
@@ -278,7 +280,7 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
             //ver el historial de compras
             R.id.action_order_history -> startActivity(Intent(this, OrderActivity::class.java))
 
-            //menu de editat perfil
+            //menu de editar perfil
             R.id.action_profile -> {
                 val fragment = ProfileFragment()
                 supportFragmentManager
@@ -287,7 +289,7 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                     .addToBackStack(null)
                     .commit()
 
-//                showButton(false)
+                showButton(false)
             }
         }
         return super.onOptionsItemSelected(item)
@@ -382,5 +384,10 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
     //limpiar carrito
     override fun clearCart() {
         productCartList.clear()
+    }
+
+    //actualizar titulo (perfil)
+    override fun updateTitle(user: FirebaseUser) {
+        supportActionBar?.title = user.displayName
     }
 }
