@@ -1,7 +1,10 @@
 package com.myclient.product
 
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -31,6 +34,7 @@ import com.myclient.databinding.ActivityMainBinding
 import com.myclient.detail.DetailFragment
 import com.myclient.entities.Product
 import com.myclient.order.OrderActivity
+import java.security.MessageDigest
 
 class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
 
@@ -153,7 +157,8 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                 //habilitar todos los proveedores de auth
                 val providers = arrayListOf(
                     AuthUI.IdpConfig.EmailBuilder().build(),
-                    AuthUI.IdpConfig.GoogleBuilder().build())
+                    AuthUI.IdpConfig.GoogleBuilder().build(),
+                    AuthUI.IdpConfig.FacebookBuilder().build())
 
                 resultLauncher.launch(AuthUI.getInstance()
                     .createSignInIntentBuilder()
@@ -162,6 +167,35 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                     .build())
             }
         }
+/*
+
+        //para facebook login
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val info = getPackageManager().getPackageInfo(
+                    "com.myclient",
+                    PackageManager.GET_SIGNING_CERTIFICATES)
+                for (signature in info.signingInfo.apkContentsSigners) {
+                    val md = MessageDigest.getInstance("SHA");
+                    md.update(signature.toByteArray());
+                    Log.d("API >= 28 KeyHash:",
+                        Base64.encodeToString(md.digest(), Base64.DEFAULT));
+                }
+            } else {
+                val info = getPackageManager().getPackageInfo(
+                    "com.myclient",
+                    PackageManager.GET_SIGNATURES);
+                for (signature in info.signatures) {
+                    val md = MessageDigest.getInstance("SHA");
+                    md.update(signature.toByteArray());
+                    Log.d("API < 28 KeyHash:",
+                        Base64.encodeToString(md.digest(), Base64.DEFAULT));
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+*/
     }
 
 
