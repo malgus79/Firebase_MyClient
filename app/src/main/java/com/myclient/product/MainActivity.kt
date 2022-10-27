@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
+import com.firebase.ui.auth.AuthMethodPickerLayout
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
@@ -161,10 +162,23 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                     AuthUI.IdpConfig.FacebookBuilder().build(),
                     AuthUI.IdpConfig.PhoneBuilder().build())
 
+                //vista personalizada
+                val loginView = AuthMethodPickerLayout
+                    .Builder(R.layout.view_login)
+                    .setEmailButtonId(R.id.btnEmail)
+                    .setGoogleButtonId(R.id.btnGoogle)
+                    .setFacebookButtonId(R.id.btnFacebook)
+                    .setPhoneButtonId(R.id.btnPhone)
+                    .setTosAndPrivacyPolicyId(R.id.tvPolicy)
+                    .build()
+
                 resultLauncher.launch(AuthUI.getInstance()
                     .createSignInIntentBuilder()
                     .setAvailableProviders(providers)
                     .setIsSmartLockEnabled(false) //desactivar la muestra de las opciones de uauario
+                    .setTosAndPrivacyPolicyUrls("https://www.chess.com/es",
+                        "https://www.chess.com/es")
+                    .setAuthMethodPickerLayout(loginView)
                     .build())
             }
         }

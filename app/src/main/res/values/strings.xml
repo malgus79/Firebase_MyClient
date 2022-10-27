@@ -39,5 +39,20 @@
     <string name="facebook_application_id" translatable="false">1080183862700428</string>
     <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
     <string name="facebook_login_protocol_scheme" translatable="false">fb1080183862700428</string>
-
+    <string name="login_welcome">Bienvenido, por favor inicie sesión.</string>
+    <string name="login_email">Email</string>
+    <string name="login_google">Google</string>
+    <string name="login_facebook">Facebook</string>
+    <string name="login_phone">Phone</string>
+    <string name="hint_full_name">nombre completo</string>
+    <string name="hint_photo_url">URL de foto</string>
+    <string name="profile_update">Actualizar</string>
+    <string name="product_menu_profile">Editar perfil</string>
+    <string name="product_menu_sign_out">Cerrar sesión</string>
+    <string name="profile_title">Perfil de usuario</string>
+    <string name="pref_fcm_title">Recibir notificaciones</string>
+    <string name="pref_offers_key">pref_offers</string>
+    <string name="pref_offers_title">Ofertas y promociones</string>
+    <string name="product_menu_settings">Configuración</string>
+    <string name="settings_topic_offers">topic_offers</string>
 </resources>
