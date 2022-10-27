@@ -178,7 +178,8 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                     .setIsSmartLockEnabled(false) //desactivar la muestra de las opciones de uauario
                     .setTosAndPrivacyPolicyUrls("https://www.chess.com/es",
                         "https://www.chess.com/es")
-                    .setAuthMethodPickerLayout(loginView)
+                    .setAuthMethodPickerLayout(loginView)  //vista login personalizada
+                    .setTheme(R.style.LoginTheme)  //theme personalizado
                     .build())
             }
         }
