@@ -10,8 +10,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import com.myclient.Constants
 import com.myclient.R
 import com.myclient.databinding.FragmentCartBinding
@@ -31,6 +35,7 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
 
     private var totalPrice = 0.0
 
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = FragmentCartBinding.inflate(LayoutInflater.from(activity))
@@ -53,6 +58,7 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
             setupButtons()
 
             getProducts()
+            configAnalytics()
 
             return bottomSheetDialog
         }
@@ -95,6 +101,14 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
         }
     }
 
+    //analytics
+    private fun configAnalytics(){
+        firebaseAnalytics = Firebase.analytics
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW){
+            param(FirebaseAnalytics.Param.METHOD, "check_track")
+        }
+    }
+
     //cerrar el fragmento y limpiar el listado
     private fun requestOrder(){
         //extraer el usuario autenticado para usar su uid
@@ -123,20 +137,22 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
                     startActivity(Intent(context, OrderActivity::class.java))
 
                     Toast.makeText(activity, "Compra realizada.", Toast.LENGTH_SHORT).show()
-//                    //Analytics
-//                    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.ADD_PAYMENT_INFO){
-//                        val products = mutableListOf<Bundle>()
-//                        order.products.forEach {
-//                            if (it.value.quantity > 5) {
-//                                val bundle = Bundle()
-//                                bundle.putString("id_product", it.key)
-//                                products.add(bundle)
-//                            }
-//                        }
-//                        param(FirebaseAnalytics.Param.QUANTITY, products.toTypedArray())
-//                    }
-//                    firebaseAnalytics.setUserProperty(Constants.USER_PROP_QUANTITY,
-//                        if (products.size > 0) "con_mayoreo" else "sin_mayoreo")
+                    //analytics
+                    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.ADD_PAYMENT_INFO){
+                        val products = mutableListOf<Bundle>()
+                        order.products.forEach {
+                            //en caso de que se compren mas de 5 productos (mayoreo)
+                            if (it.value.quantity > 5) {
+                                val bundle = Bundle()
+                                bundle.putString("id_product", it.key)
+                                products.add(bundle)
+                            }
+                        }
+                        param(FirebaseAnalytics.Param.QUANTITY, products.toTypedArray())
+                    }
+                    firebaseAnalytics.setUserProperty(Constants.USER_PROP_QUANTITY,
+                        //al menos 1 producto supero el "mayoreo"
+                        if (products.size > 0) "con_mayoreo" else "sin_mayoreo")
                 }
                 .addOnFailureListener {
                     Toast.makeText(activity, "Error al comprar.", Toast.LENGTH_SHORT).show()
