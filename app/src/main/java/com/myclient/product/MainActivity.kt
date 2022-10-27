@@ -35,6 +35,7 @@ import com.myclient.databinding.ActivityMainBinding
 import com.myclient.detail.DetailFragment
 import com.myclient.entities.Product
 import com.myclient.order.OrderActivity
+import com.myclient.profile.ProfileFragment
 import java.security.MessageDigest
 
 class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
@@ -277,16 +278,17 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
             //ver el historial de compras
             R.id.action_order_history -> startActivity(Intent(this, OrderActivity::class.java))
 
-//            R.id.action_profile -> {
-//                val fragment = ProfileFragment()
-//                supportFragmentManager
-//                    .beginTransaction()
-//                    .add(R.id.containerMain, fragment)
-//                    .addToBackStack(null)
-//                    .commit()
-//
+            //menu de editat perfil
+            R.id.action_profile -> {
+                val fragment = ProfileFragment()
+                supportFragmentManager
+                    .beginTransaction()
+                    .add(R.id.containerMain, fragment)
+                    .addToBackStack(null)
+                    .commit()
+
 //                showButton(false)
-//            }
+            }
         }
         return super.onOptionsItemSelected(item)
     }
