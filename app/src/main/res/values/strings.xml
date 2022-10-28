@@ -55,4 +55,6 @@
     <string name="pref_offers_title">Ofertas y promociones</string>
     <string name="product_menu_settings">Configuración</string>
     <string name="settings_topic_offers">topic_offers</string>
+    <string name="not_available">Sin stock disponible</string>
+    <string name="zero">0</string>
 </resources>

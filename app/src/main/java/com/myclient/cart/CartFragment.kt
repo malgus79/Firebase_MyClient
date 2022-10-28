@@ -14,6 +14,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.myclient.Constants
@@ -90,7 +91,7 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
             }
             //extraer el pedido en una orden
             it.efab.setOnClickListener {
-                requestOrder()
+                requestOrderTransaction()
             }
         }
     }
@@ -109,7 +110,67 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
         }
     }
 
-    //cerrar el fragmento y limpiar el listado
+    //Pedido de la orden (incluyendo el tema de la cantidad disponible de cada producto)
+    private fun requestOrderTransaction(){
+        val user = FirebaseAuth.getInstance().currentUser
+        user?.let { myUser ->
+            enableUI(false)
+
+            val products = hashMapOf<String, ProductOrder>()
+            adapter.getProducts().forEach { product ->
+                products.put(product.id!!, ProductOrder(product.id!!, product.name!!, product.newQuantity))
+            }
+
+            val order = Order(clientId = myUser.uid, products = products, totalPrice = totalPrice, status = 1)
+
+            val db = FirebaseFirestore.getInstance()
+
+            val requestDoc = db.collection(Constants.COLL_REQUESTS).document()
+            val productsRef = db.collection(Constants.COLL_PRODUCTS)
+
+            db.runBatch { batch ->
+                //referencia del doc y los datos (orden)
+                batch.set(requestDoc, order)
+
+                //disminuir las cantidades del inventario original
+                order.products.forEach {
+                    batch.update(productsRef.document(it.key), Constants.PROP_QUANTITY,
+                        //FieldValue = se hace una lectura de la cantidad actual del campo, resta y aplica cambios
+                        FieldValue.increment(-it.value.quantity.toLong()))
+                    //la verificacion es por si 2 clientes compran al mismo tiempo la ultima unidad del producto
+                }
+            }
+                .addOnSuccessListener {
+                    dismiss()
+                    (activity as? MainAux)?.clearCart()
+                    startActivity(Intent(context, OrderActivity::class.java))
+
+                    Toast.makeText(activity, "Compra realizada.", Toast.LENGTH_SHORT).show()
+                    //Analytics
+                    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.ADD_PAYMENT_INFO){
+                        val products = mutableListOf<Bundle>()
+                        order.products.forEach {
+                            if (it.value.quantity > 5) {
+                                val bundle = Bundle()
+                                bundle.putString("id_product", it.key)
+                                products.add(bundle)
+                            }
+                        }
+                        param(FirebaseAnalytics.Param.QUANTITY, products.toTypedArray())
+                    }
+                    firebaseAnalytics.setUserProperty(Constants.USER_PROP_QUANTITY,
+                        if (products.size > 0) "con_mayoreo" else "sin_mayoreo")
+                }
+                .addOnFailureListener {
+                    Toast.makeText(activity, "Error al comprar.", Toast.LENGTH_SHORT).show()
+                }
+                .addOnCompleteListener {
+                    enableUI(true)
+                }
+        }
+    }
+
+    //Pedido de la orden (al final: cerrar el fragmento y limpiar el listado)
     private fun requestOrder(){
         //extraer el usuario autenticado para usar su uid
         val user = FirebaseAuth.getInstance().currentUser

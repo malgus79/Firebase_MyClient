@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
@@ -72,23 +73,30 @@ class DetailFragment : Fragment() {
     //incrementar/disminuir la nueva cantidad
     private fun setupButtons(){
         product?.let { product ->
-            binding?.let { binding ->
-                binding.ibSub.setOnClickListener {
-                    if (product.newQuantity > 1){
-                        product.newQuantity -= 1
-                        setNewQuantity(product)
+            if (product.quantity > 0) {
+                binding?.let { binding ->
+                    binding.ibSub.setOnClickListener {
+                        if (product.newQuantity > 1){
+                            product.newQuantity -= 1
+                            setNewQuantity(product)
+                        }
+                    }
+                    binding.ibSum.setOnClickListener {
+                        if (product.newQuantity < product.quantity){  //nueva cantidad < cantidad disponible
+                            product.newQuantity += 1
+                            setNewQuantity(product)
+                        }
+                    }
+                    binding.efab.setOnClickListener {
+                        product.newQuantity = binding.etNewQuantity.text.toString().toInt()
+                        addToCart(product)
                     }
                 }
-                binding.ibSum.setOnClickListener {
-                    if (product.newQuantity < product.quantity){  //nueva cantidad < cantidad disponible
-                        product.newQuantity += 1
-                        setNewQuantity(product)
-                    }
-                }
-                binding.efab.setOnClickListener {
-                    product.newQuantity = binding.etNewQuantity.text.toString().toInt()
-                    addToCart(product)
-                }
+            } else {
+                binding?.tvQuantity?.text = getString(R.string.not_available)
+                binding?.tvQuantity?.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_500))
+                binding?.etNewQuantity?.setText(R.string.zero)
+                binding?.efab?.isEnabled = false
             }
         }
     }

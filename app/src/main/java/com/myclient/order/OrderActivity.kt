@@ -62,26 +62,27 @@ class OrderActivity : AppCompatActivity(), OnOrderListener, OrderAux {
         }
     }
 
+    //consultas a firestore
     private fun setupFirestore(){
-//        FirebaseAuth.getInstance().currentUser?.let { user ->
+        FirebaseAuth.getInstance().currentUser?.let { user ->
             val db = FirebaseFirestore.getInstance()
 
             db.collection(Constants.COLL_REQUESTS)
-                //.orderBy(Constants.PROP_DATE, Query.Direction.ASCENDING)
-                //.orderBy(Constants.PROP_DATE, Query.Direction.DESCENDING)
-                //.whereEqualTo(Constants.PROP_CLIENT_ID, user.uid)
-                //.whereIn(Constants.PROP_STATUS, listOf(1, 4))
-                //.whereNotIn(Constants.PROP_STATUS, listOf(4))
-                //.whereGreaterThan(Constants.PROP_STATUS, 2)
-                //.whereLessThan(Constants.PROP_STATUS, 4)
-                //.whereEqualTo(Constants.PROP_STATUS, 3)
-                //.whereGreaterThanOrEqualTo(Constants.PROP_STATUS, 2)
+                //.orderBy(Constants.PROP_DATE, Query.Direction.ASCENDING)  //ordenar por fecha asc
+                //.orderBy(Constants.PROP_DATE, Query.Direction.DESCENDING)  //ordenar por fecha desc
+                //.whereEqualTo(Constants.PROP_CLIENT_ID, user.uid)  //cada cliente solo vea sus ordenes
+                //.whereIn(Constants.PROP_STATUS, listOf(1, 4))  //ordenes con status 1 y 4 (tiene que ser en forma de array)
+                //.whereNotIn(Constants.PROP_STATUS, listOf(4))  //traer todoo lo que no coincida con el array
+                //.whereGreaterThan(Constants.PROP_STATUS, 2)  //mayor que
+                //.whereLessThan(Constants.PROP_STATUS, 4)  //menor que
+                //.whereEqualTo(Constants.PROP_STATUS, 3)  //igual que
+                //.whereGreaterThanOrEqualTo(Constants.PROP_STATUS, 2)  //mayor o igual que
                 /*.whereEqualTo(Constants.PROP_CLIENT_ID, user.uid)
                 .orderBy(Constants.PROP_STATUS, Query.Direction.DESCENDING)*/
-//                .whereEqualTo(Constants.PROP_CLIENT_ID, user.uid)
+                .whereEqualTo(Constants.PROP_CLIENT_ID, user.uid)
                 /*.orderBy(Constants.PROP_STATUS, Query.Direction.ASCENDING)
                 .whereLessThan(Constants.PROP_STATUS, 4)*/
-//                .orderBy(Constants.PROP_DATE, Query.Direction.DESCENDING)
+                .orderBy(Constants.PROP_DATE, Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener {
                     for (document in it){
@@ -94,7 +95,7 @@ class OrderActivity : AppCompatActivity(), OnOrderListener, OrderAux {
                     Toast.makeText(this, "Error al consultar los datos.", Toast.LENGTH_SHORT)
                         .show()
                 }
-//        }
+        }
     }
 
     //lanzar el fragmentTrack
