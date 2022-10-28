@@ -299,7 +299,7 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
 
         //listener: captar los cambios
         firestoreListener = productRef
-            .limit(5)
+            .limit(6)
             .addSnapshotListener { snapshots, error ->
             if (error != null) {
                 Toast.makeText(this, "Error al consultar datos.", Toast.LENGTH_SHORT).show()
@@ -311,7 +311,7 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                 val lastItem = items.documents[items.size() - 1]
                 queryPagination = productRef
                     .startAfter(lastItem)
-                    .limit(5)
+                    .limit(6)
 
                 //en caso de que no exista error
                 for (snapshot in snapshots!!.documentChanges) {
@@ -411,21 +411,25 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                     return@addSnapshotListener
                 }
 
-                snapshots?.let { items ->
-                    val lastItem = items.documents[items.size() - 1]
-                    queryPagination = productRef
-                        .startAfter(lastItem)
-                        .limit(6)
+                try {
+                    snapshots?.let { items ->
+                        val lastItem = items.documents[items.size() - 1]
+                        queryPagination = productRef
+                            .startAfter(lastItem)
+                            .limit(6)
 
-                    for (snapshot in snapshots!!.documentChanges){
-                        val product = snapshot.document.toObject(Product::class.java)
-                        product.id = snapshot.document.id
-                        when(snapshot.type){
-                            DocumentChange.Type.ADDED -> adapter.add(product)
-                            DocumentChange.Type.MODIFIED -> adapter.update(product)
-                            DocumentChange.Type.REMOVED -> adapter.delete(product)
+                        for (snapshot in snapshots!!.documentChanges){
+                            val product = snapshot.document.toObject(Product::class.java)
+                            product.id = snapshot.document.id
+                            when(snapshot.type){
+                                DocumentChange.Type.ADDED -> adapter.add(product)
+                                DocumentChange.Type.MODIFIED -> adapter.update(product)
+                                DocumentChange.Type.REMOVED -> adapter.delete(product)
+                            }
                         }
                     }
+                } catch (e:Exception) {
+                    Toast.makeText(this, "No hay mas productos para mostrar", Toast.LENGTH_SHORT).show()
                 }
             }
         }
