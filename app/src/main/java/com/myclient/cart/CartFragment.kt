@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -57,6 +58,7 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
 
             setupRecyclerView()
             setupButtons()
+            initBtnCart()
 
             getProducts()
             configAnalytics()
@@ -83,7 +85,7 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
         }
     }
 
-    //boton de cerrar del bottomSheet
+    //botones del bottomSheet: cerrar y pagar
     private fun setupButtons(){
         binding?.let {
             it.ibCancel.setOnClickListener {
@@ -93,6 +95,13 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
             it.efab.setOnClickListener {
                 requestOrderTransaction()
             }
+        }
+    }
+
+    //desabilitar "pagar" si el total = 0
+    private fun initBtnCart() {
+        if (totalPrice == 0.0) {
+            binding!!.efab.isEnabled = false
         }
     }
 
@@ -225,7 +234,7 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
         }
     }
 
-    //sesabilitar boton de cerrar y pagar en el carrito
+    //desabilitar boton de cerrar y pagar en el carrito
     private fun enableUI(enable: Boolean){
         binding?.let {
             it.ibCancel.isEnabled = enable
@@ -250,6 +259,7 @@ class CartFragment : BottomSheetDialogFragment(), OnCartListener {
         totalPrice = total
         binding?.let {
             it.tvTotal.text = getString(R.string.product_full_cart, total)
+            binding?.efab?.isEnabled = totalPrice > 0
         }
     }
 }
