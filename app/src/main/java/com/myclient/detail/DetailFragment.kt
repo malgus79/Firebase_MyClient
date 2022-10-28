@@ -93,10 +93,12 @@ class DetailFragment : Fragment() {
                     }
                 }
             } else {
-                binding?.tvQuantity?.text = getString(R.string.not_available)
-                binding?.tvQuantity?.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_500))
-                binding?.etNewQuantity?.setText(R.string.zero)
-                binding?.efab?.isEnabled = false
+                with(binding) {
+                    this?.tvQuantity?.text = getString(R.string.not_available)
+                    this?.tvQuantity?.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_500))
+                    this?.etNewQuantity?.setText(R.string.zero)
+                    this?.efab?.isEnabled = false
+                }
             }
         }
     }
