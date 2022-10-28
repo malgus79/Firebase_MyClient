@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -25,6 +26,8 @@ import com.myclient.product.MainAux
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 //import com.google.firebase.storage.FirebaseStorage
 import java.io.ByteArrayOutputStream
 
@@ -32,25 +35,24 @@ class ProfileFragment : Fragment() {
 
     private var binding: FragmentProfileBinding? = null
 
-
     private var photoSelectedUri: Uri? = null
 
-//    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-//        if (it.resultCode == Activity.RESULT_OK){
-//            photoSelectedUri = it.data?.data
-//
-//            binding?.let {
-//                Glide.with(this)
-//                    .load(photoSelectedUri)
-//                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                    .placeholder(R.drawable.ic_access_time)
-//                    .error(R.drawable.ic_broken_image)
-//                    .centerCrop()
-//                    .circleCrop()
-//                    .into(it.ibProfile)
-//            }
-//        }
-//    }
+    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        if (it.resultCode == Activity.RESULT_OK){
+            photoSelectedUri = it.data?.data
+
+            binding?.let {
+                Glide.with(this)
+                    .load(photoSelectedUri)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(R.drawable.ic_access_time)
+                    .error(R.drawable.ic_broken_image)
+                    .centerCrop()
+                    .circleCrop()
+                    .into(it.ibProfile)
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -78,7 +80,7 @@ class ProfileFragment : Fragment() {
             //obtener el usuario logieado (no null)
             FirebaseAuth.getInstance().currentUser?.let { user ->
                 binding.etFullName.setText(user.displayName)
-                binding.etPhotoUrl.setText(user.photoUrl.toString())
+                //binding.etPhotoUrl.setText(user.photoUrl.toString())
 
                 Glide.with(this)
                     .load(user.photoUrl)
@@ -108,18 +110,19 @@ class ProfileFragment : Fragment() {
 //            binding.ibProfile.setOnClickListener {
 //                openGallery()
 //            }
-
             binding.btnUpdate.setOnClickListener {
                 binding.etFullName.clearFocus()
-                binding.etPhotoUrl.clearFocus()
-//                FirebaseAuth.getInstance().currentUser?.let { user ->
-//                    if (photoSelectedUri == null) {
-//                        updateUserProfile(binding, user, Uri.parse(""))
-                updateUserProfile(binding)
-//                    } else {
-//                        uploadReducedImage(user)
-//                    }
-//                }
+                //binding.etPhotoUrl.clearFocus()
+                FirebaseAuth.getInstance().currentUser?.let { user ->
+                    //si solo se modifico el text
+                    if (photoSelectedUri == null) {
+                        //updateUserProfile(binding, user, Uri.parse(""))
+                        updateUserProfile(binding)
+                    } else {
+                        //caso contrario el usuario eligio una imagen de la geleria
+                        uploadReducedImage(user)
+                    }
+                }
             }
         }
     }
@@ -137,7 +140,7 @@ class ProfileFragment : Fragment() {
         FirebaseAuth.getInstance().currentUser?.let { user ->
             val profileUpdated = UserProfileChangeRequest.Builder()
                 .setDisplayName(binding.etFullName.text.toString().trim())
-                .setPhotoUri(Uri.parse(binding.etPhotoUrl.text.toString().trim()))
+                //.setPhotoUri(Uri.parse(binding.etPhotoUrl.text.toString().trim()))
                 .build()
 
 //        val profileUpdated = UserProfileChangeRequest.Builder()
@@ -158,72 +161,77 @@ class ProfileFragment : Fragment() {
         }
     }
 
-//    private fun uploadReducedImage(user: FirebaseUser){
-//        val profileRef = FirebaseStorage.getInstance().reference.child(user.uid)
-//            .child(Constants.PATH_PROFIlE).child(Constants.MY_PHOTO)
-//
-//        photoSelectedUri?.let { uri ->
-//            binding?.let { binding ->
-//                getBitmapFromUri(uri)?.let { bitmap ->
-//                    binding.progressBar.visibility = View.VISIBLE
-//
-//                    val baos = ByteArrayOutputStream()
-//                    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos)
-//
-//                    profileRef.putBytes(baos.toByteArray())
-//                        .addOnProgressListener {
-//                            val progress = (100 * it.bytesTransferred / it.totalByteCount).toInt()
-//                            it.run {
-//                                binding.progressBar.progress = progress
-//                                binding.tvProgress.text = String.format("%s%%", progress)
-//                            }
-//                        }
-//                        .addOnCompleteListener {
-//                            binding.progressBar.visibility = View.INVISIBLE
-//                            binding.tvProgress.text = ""
-//                        }
-//                        .addOnSuccessListener {
-//                            it.storage.downloadUrl.addOnSuccessListener { downloadUrl ->
-//                                updateUserProfile(binding, user, downloadUrl)
-//                            }
-//                        }
-//                        .addOnFailureListener{
-//                            Toast.makeText(activity, "Error al subir imagen.", Toast.LENGTH_SHORT).show()
-//                        }
-//                }
-//            }
-//        }
-//    }
+    //subir image BITMAP
+    private fun uploadReducedImage(user: FirebaseUser){
+        //identificar el id del usuario, asi se podra guardar las imagenes por usuario
+        FirebaseAuth.getInstance().currentUser?.let { user ->
+            val profileRef = FirebaseStorage.getInstance().reference.child(user.uid)
+                .child(Constants.PATH_PRODUCT_IMAGES).child(Constants.MY_PHOTO)
 
-//    private fun getBitmapFromUri(uri: Uri): Bitmap?{
-//        activity?.let {
-//            val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-//                val source = ImageDecoder.createSource(it.contentResolver, uri)
-//                ImageDecoder.decodeBitmap(source)
-//            } else {
-//                MediaStore.Images.Media.getBitmap(it.contentResolver, uri)
-//            }
-//
-//            return getResizedImage(bitmap, 256)
-//        }
-//        return null
-//    }
+            photoSelectedUri?.let { uri ->
+                binding?.let { binding ->
+                    getBitmapFromUri(uri)?.let { bitmap ->
+                        //binding.progressBar.visibility = View.VISIBLE
 
-//    private fun getResizedImage(image: Bitmap, maxSize: Int): Bitmap {
-//        var width = image.width
-//        var height = image.height
-//        if (width <= maxSize && height <= maxSize) return image
-//
-//        val bitmapRatio = width.toFloat() / height.toFloat()
-//        if (bitmapRatio > 1){
-//            width = maxSize
-//            height = (width / bitmapRatio).toInt()
-//        } else {
-//            height = maxSize
-//            width = (height / bitmapRatio).toInt()
-//        }
-//        return Bitmap.createScaledBitmap(image, width, height, true)
-//    }
+                        //para configurar bitmap (formato y calidad)
+                        val baos = ByteArrayOutputStream()
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos)
+
+                        profileRef.putBytes(baos.toByteArray())
+                            .addOnProgressListener {
+                                val progress = (100 * it.bytesTransferred / it.totalByteCount).toInt()
+                                it.run {
+                                    //binding.progressBar.progress = progress
+                                    //binding.tvProgress.text = String.format("%s%%", progress)
+                                }
+                            }
+                            .addOnSuccessListener {
+                                it.storage.downloadUrl.addOnSuccessListener { downloadUrl ->
+                                    Log.i("URL", downloadUrl.toString())
+                                }
+                            }
+                            .addOnFailureListener{
+                                Toast.makeText(activity, "Error al subir imagen.", Toast.LENGTH_SHORT).show()
+                            }
+                    }
+                }
+            }
+        }
+    }
+
+    //obtener imagen bitmap desde una uri
+    private fun getBitmapFromUri(uri: Uri): Bitmap?{
+        activity?.let {
+            val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val source = ImageDecoder.createSource(it.contentResolver, uri)
+                ImageDecoder.decodeBitmap(source)
+            } else {
+                MediaStore.Images.Media.getBitmap(it.contentResolver, uri)
+            }
+            return getResizedImage(bitmap, 320)
+        }
+        return null
+    }
+
+    //cambiar dimensiones de las imagenes
+    private fun getResizedImage(image: Bitmap, maxSize: Int): Bitmap{
+        var width = image.width
+        var height = image.height
+        //ancho y alto es menor al maximo de la imagen -> no se hace nada
+        if (width <= maxSize && height <= maxSize) return image
+
+        //imagen tiene una dimension mas grande que el tamaño maximo (alto o ancho)
+        // objetivo: mantener el ratio de ese bitmap
+        val bitmapRatio = width.toFloat() / height.toFloat()
+        if (bitmapRatio > 1){
+            width = maxSize
+            height = (width / bitmapRatio).toInt()
+        } else {
+            height = maxSize
+            width = (height / bitmapRatio).toInt()
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true)
+    }
 
     //accion del retroceso (flecha atras en el titulo)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

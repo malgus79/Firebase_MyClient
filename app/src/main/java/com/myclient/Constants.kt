@@ -22,4 +22,9 @@ object Constants {
 
     //Analytics
     const val USER_PROP_QUANTITY = "quantity_product"
+
+    //storage
+    const val PATH_PRODUCT_IMAGES = "product_images"
+    const val PATH_PROFIlE = "profile"
+    const val MY_PHOTO = "my_photo"
 }
