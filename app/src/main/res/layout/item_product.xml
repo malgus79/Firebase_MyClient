@@ -7,6 +7,7 @@
     android:layout_margin="@dimen/common_margin_min">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containerProduct"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -47,5 +48,14 @@
             app:layout_constraintTop_toBottomOf="@id/tvName"
             app:layout_constraintBottom_toBottomOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnMore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Más"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
 </com.google.android.material.card.MaterialCardView>

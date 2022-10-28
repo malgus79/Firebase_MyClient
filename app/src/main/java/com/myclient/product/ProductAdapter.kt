@@ -29,17 +29,26 @@ class ProductAdapter(private val productList: MutableList<Product>,
 
         holder.setListener(product)
 
-        holder.binding.tvName.text = product.name
-        holder.binding.tvPrice.text = product.price.toString()
-        holder.binding.tvQuantity.text = product.quantity.toString()
+        //si el id es invalido -> se va a mostrar el btn "MAS"
+        if(product.id == null){
+            holder.binding.containerProduct.visibility = View.GONE
+            holder.binding.btnMore.visibility = View.VISIBLE
+        } else {
+            holder.binding.containerProduct.visibility = View.VISIBLE
+            holder.binding.btnMore.visibility = View.GONE
 
-        Glide.with(context)
-            .load(product.imgUrl)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .placeholder(R.drawable.ic_access_time)
-            .error(R.drawable.ic_broken_image)
-            .centerCrop()
-            .into(holder.binding.imgProduct)
+            holder.binding.tvName.text = product.name
+            holder.binding.tvPrice.text = product.price.toString()
+            holder.binding.tvQuantity.text = product.quantity.toString()
+
+            Glide.with(context)
+                .load(product.imgUrl)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .placeholder(R.drawable.ic_access_time)
+                .error(R.drawable.ic_broken_image)
+                .centerCrop()
+                .into(holder.binding.imgProduct)
+        }
     }
 
     override fun getItemCount(): Int = productList.size
@@ -48,8 +57,9 @@ class ProductAdapter(private val productList: MutableList<Product>,
     fun add(product: Product) {
         if (!productList.contains(product)) {
             //agregar si no existe
-            productList.add(product)
-            notifyItemInserted(productList.size - 1)
+            //productList.add(product)
+            productList.add(productList.size - 1, product)  //agregar antes del ultimo elemento
+            notifyItemInserted(productList.size - 2)
         } else {
             //actualizarlo si ya existe
             update(product)
@@ -80,6 +90,10 @@ class ProductAdapter(private val productList: MutableList<Product>,
         fun setListener(product: Product) {
             binding.root.setOnClickListener {
                 listener.onClick(product)
+            }
+            //evento del click del btn "mas" (paginacion)
+            binding.btnMore.setOnClickListener {
+                listener.loadMore()
             }
         }
     }

@@ -1,10 +1,7 @@
 package com.myclient.product
 
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.util.Base64
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -27,8 +24,8 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Query
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.FirebaseMessaging
 import com.myclient.Constants
 import com.myclient.R
 import com.myclient.cart.CartFragment
@@ -37,7 +34,6 @@ import com.myclient.detail.DetailFragment
 import com.myclient.entities.Product
 import com.myclient.order.OrderActivity
 import com.myclient.profile.ProfileFragment
-import java.security.MessageDigest
 
 class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
 
@@ -49,6 +45,7 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
     private lateinit var adapter: ProductAdapter
 
     private lateinit var firestoreListener: ListenerRegistration
+    private var queryPagination: Query? = null
 
     private var productSelected: Product? = null
     private val productCartList = mutableListOf<Product>()
@@ -233,7 +230,7 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
 
     //config recyclerView
     private fun configRecyclerView(){
-        adapter = ProductAdapter(mutableListOf(), this)
+        adapter = ProductAdapter(mutableListOf(Product()), this)
         binding.recyclerView.apply {
             layoutManager = GridLayoutManager(this@MainActivity, 3,
                 GridLayoutManager.HORIZONTAL, false)
@@ -301,19 +298,30 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
         val productRef = db.collection(Constants.COLL_PRODUCTS)
 
         //listener: captar los cambios
-        firestoreListener = productRef.addSnapshotListener { snapshots, error ->
-            if (error != null){
+        firestoreListener = productRef
+            .limit(5)
+            .addSnapshotListener { snapshots, error ->
+            if (error != null) {
                 Toast.makeText(this, "Error al consultar datos.", Toast.LENGTH_SHORT).show()
                 return@addSnapshotListener
             }
-            //en caso de que no exista error
-            for (snapshot in snapshots!!.documentChanges){
-                val product = snapshot.document.toObject(Product::class.java)
-                product.id = snapshot.document.id
-                when(snapshot.type){
-                    DocumentChange.Type.ADDED -> adapter.add(product)
-                    DocumentChange.Type.MODIFIED -> adapter.update(product)
-                    DocumentChange.Type.REMOVED -> adapter.delete(product)
+
+            snapshots?.let { items ->
+                //obtener el ultimo elemento
+                val lastItem = items.documents[items.size() - 1]
+                queryPagination = productRef
+                    .startAfter(lastItem)
+                    .limit(5)
+
+                //en caso de que no exista error
+                for (snapshot in snapshots!!.documentChanges) {
+                    val product = snapshot.document.toObject(Product::class.java)
+                    product.id = snapshot.document.id
+                    when (snapshot.type) {
+                        DocumentChange.Type.ADDED -> adapter.add(product)
+                        DocumentChange.Type.MODIFIED -> adapter.update(product)
+                        DocumentChange.Type.REMOVED -> adapter.delete(product)
+                    }
                 }
             }
         }
@@ -389,5 +397,37 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
     //actualizar titulo (perfil)
     override fun updateTitle(user: FirebaseUser) {
         supportActionBar?.title = user.displayName
+    }
+
+    //paginacion para recargar mas productos
+    override fun loadMore() {
+        val db = FirebaseFirestore.getInstance()
+        val productRef = db.collection(Constants.COLL_PRODUCTS)
+
+        queryPagination?.let {
+            it.addSnapshotListener { snapshots, error ->
+                if (error != null){
+                    Toast.makeText(this, "Error al consultar datos.", Toast.LENGTH_SHORT).show()
+                    return@addSnapshotListener
+                }
+
+                snapshots?.let { items ->
+                    val lastItem = items.documents[items.size() - 1]
+                    queryPagination = productRef
+                        .startAfter(lastItem)
+                        .limit(6)
+
+                    for (snapshot in snapshots!!.documentChanges){
+                        val product = snapshot.document.toObject(Product::class.java)
+                        product.id = snapshot.document.id
+                        when(snapshot.type){
+                            DocumentChange.Type.ADDED -> adapter.add(product)
+                            DocumentChange.Type.MODIFIED -> adapter.update(product)
+                            DocumentChange.Type.REMOVED -> adapter.delete(product)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
