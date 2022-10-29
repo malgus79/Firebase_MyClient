@@ -24,6 +24,10 @@
             android:name=".order.OrderActivity"
             android:exported="false"
             android:label="@string/order_title">
+            <intent-filter>
+                <action android:name="OPEN_ORDER"/>  <!-- verificacion de que actividad esta registrada bajo ese nombre (notifications) -->
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -50,6 +54,7 @@
             </intent-filter>
         </service>
 
+<!--
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_stat_name" />
@@ -58,7 +63,10 @@
             android:resource="@color/amber_500_dark" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/notification_channel_id_default" /> <!-- Facebook -->
+            android:value="@string/notification_channel_id_default" />
+-->
+
+        <!-- Facebook -->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_application_id" />

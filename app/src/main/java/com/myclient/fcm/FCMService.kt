@@ -5,6 +5,8 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
@@ -12,10 +14,14 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.myclient.Constants
 import com.myclient.R
+import com.myclient.order.OrderActivity
 import com.myclient.product.MainActivity
 
 class FCMService : FirebaseMessagingService() {
@@ -47,34 +53,32 @@ class FCMService : FirebaseMessagingService() {
 
         //verificar que la notificacion no sea nula
         remoteMessage.notification?.let {
-//            val imgUrl = it.imageUrl//"https://facturacionweb.site/blog/wp-content/uploads/2020/08/firebase_android.png"
-//            if (imgUrl == null){
+            val imgUrl = it.imageUrl//"https://www.maxpixel.net/static/photo/1x/Marvel-Super-Hero-Flash-4281077.png"
+            if (imgUrl == null){
                 sendNotification(it)
-//            } else {
-//                Glide.with(applicationContext)
-//                    .asBitmap()
-//                    .load(imgUrl)
-//                    .into(object : CustomTarget<Bitmap?>(){
-//                        override fun onResourceReady(
-//                            resource: Bitmap,
-//                            transition: Transition<in Bitmap?>?
-//                        ) {
-//                            sendNotification(it, resource)
-//                        }
-//
-//                        override fun onLoadCleared(placeholder: Drawable?) {}
-//                    })
-//            }
+            } else {
+                Glide.with(applicationContext)
+                    .asBitmap()
+                    .load(imgUrl)
+                    //implementacion de la interfaz
+                    .into(object : CustomTarget<Bitmap?>(){
+                        override fun onResourceReady(
+                            resource: Bitmap,
+                            transition: Transition<in Bitmap?>?
+                        ) {
+                            sendNotification(it, resource)
+                        }
+                        override fun onLoadCleared(placeholder: Drawable?) {}
+                    })
+            }
         }
     }
 
     //procesar el mensaje recibido
-    private fun sendNotification(notification: RemoteMessage.Notification
-    //                             , bitmap: Bitmap? = null
-    ){
+    private fun sendNotification(notification: RemoteMessage.Notification, bitmap: Bitmap? = null){
         //construir una notifcacion con kotlin
-        val intent = Intent(this, MainActivity::class.java)
-        //val intent = Intent(this, OrderActivity::class.java)
+        //val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, OrderActivity::class.java)  //definir a que activity se lleva al clickear en la notificacion
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)  //recomendacion de firebase
         val pendingIntent = PendingIntent.getActivity(this, 0, intent,
             //PendingIntent.FLAG_ONE_SHOT)
@@ -90,16 +94,16 @@ class FCMService : FirebaseMessagingService() {
             .setSound(defaultSoundUri)
             .setColor(ContextCompat.getColor(this, R.color.amber_500_dark))
             .setContentIntent(pendingIntent)
-//            .setStyle(NotificationCompat.BigTextStyle()
-//                .bigText(notification.body))
+            .setStyle(NotificationCompat.BigTextStyle()
+                .bigText(notification.body))  //hacer expandible el texto
 
-//        bitmap?.let {
-//            notificationBuilder
-//                .setLargeIcon(bitmap)
-//                .setStyle(NotificationCompat.BigPictureStyle()
-//                    .bigPicture(bitmap)
-//                    .bigLargeIcon(null))
-//        }
+        bitmap?.let {
+            notificationBuilder
+                .setLargeIcon(bitmap)
+                .setStyle(NotificationCompat.BigPictureStyle()
+                    .bigPicture(bitmap)
+                    .bigLargeIcon(null))
+        }
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
