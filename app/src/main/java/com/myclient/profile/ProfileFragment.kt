@@ -107,9 +107,9 @@ class ProfileFragment : Fragment() {
 
     private fun configButtons() {
         binding?.let { binding ->
-//            binding.ibProfile.setOnClickListener {
-//                openGallery()
-//            }
+            binding.ibProfile.setOnClickListener {
+                openGallery()
+            }
             binding.btnUpdate.setOnClickListener {
                 binding.etFullName.clearFocus()
                 //binding.etPhotoUrl.clearFocus()
@@ -117,7 +117,7 @@ class ProfileFragment : Fragment() {
                     //si solo se modifico el text
                     if (photoSelectedUri == null) {
                         //updateUserProfile(binding, user, Uri.parse(""))
-                        updateUserProfile(binding)
+                        updateUserProfile(binding, user, Uri.parse(""))
                     } else {
                         //caso contrario el usuario eligio una imagen de la geleria
                         uploadReducedImage(user)
@@ -127,73 +127,74 @@ class ProfileFragment : Fragment() {
         }
     }
 
-//    private fun openGallery() {
-//        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-//        resultLauncher.launch(intent)
-//    }
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        resultLauncher.launch(intent)
+    }
 
     //actualizar perfil
-    private fun updateUserProfile(binding: FragmentProfileBinding) {
+    private fun updateUserProfile(binding: FragmentProfileBinding, user: FirebaseUser, uri: Uri) {
 //    private fun updateUserProfile(binding: FragmentProfileBinding, user: FirebaseUser, uri: Uri) {
 
         //para poder editar tanto el nombre como la foto de perfil
-        FirebaseAuth.getInstance().currentUser?.let { user ->
-            val profileUpdated = UserProfileChangeRequest.Builder()
-                .setDisplayName(binding.etFullName.text.toString().trim())
-                //.setPhotoUri(Uri.parse(binding.etPhotoUrl.text.toString().trim()))
-                .build()
+        val profileUpdated = UserProfileChangeRequest.Builder()
+            .setDisplayName(binding.etFullName.text.toString().trim())
+            .setPhotoUri(uri)
+            .build()
 
 //        val profileUpdated = UserProfileChangeRequest.Builder()
 //            .setDisplayName(binding.etFullName.text.toString().trim())
 //            .setPhotoUri(uri)
 //            .build()
 
-            user.updateProfile(profileUpdated)
-                .addOnSuccessListener {
-                    Toast.makeText(activity, "Usuario actualizado.", Toast.LENGTH_SHORT).show()
-                    (activity as? MainAux)?.updateTitle(user)
-                    activity?.onBackPressed()  //para cerrar el fragmento
-                }
-                .addOnFailureListener {
-                    Toast.makeText(activity, "Error al actualizar el usuario.", Toast.LENGTH_SHORT)
-                        .show()
-                }
-        }
+        user.updateProfile(profileUpdated)
+            .addOnSuccessListener {
+                Toast.makeText(activity, "Usuario actualizado.", Toast.LENGTH_SHORT).show()
+                (activity as? MainAux)?.updateTitle(user)
+                activity?.onBackPressed()  //para cerrar el fragmento
+            }
+            .addOnFailureListener {
+                Toast.makeText(activity, "Error al actualizar el usuario.", Toast.LENGTH_SHORT)
+                    .show()
+            }
     }
 
     //subir image BITMAP
     private fun uploadReducedImage(user: FirebaseUser){
         //identificar el id del usuario, asi se podra guardar las imagenes por usuario
-        FirebaseAuth.getInstance().currentUser?.let { user ->
-            val profileRef = FirebaseStorage.getInstance().reference.child(user.uid)
-                .child(Constants.PATH_PRODUCT_IMAGES).child(Constants.MY_PHOTO)
+        val profileRef = FirebaseStorage.getInstance().reference.child(user.uid)
+            .child(Constants.PATH_PROFIlE).child(Constants.MY_PHOTO)
 
-            photoSelectedUri?.let { uri ->
-                binding?.let { binding ->
-                    getBitmapFromUri(uri)?.let { bitmap ->
-                        //binding.progressBar.visibility = View.VISIBLE
+        photoSelectedUri?.let { uri ->
+            binding?.let { binding ->
+                getBitmapFromUri(uri)?.let { bitmap ->
+                    binding.progressBar.visibility = View.VISIBLE
 
-                        //para configurar bitmap (formato y calidad)
-                        val baos = ByteArrayOutputStream()
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos)
+                    //para configurar bitmap (formato y calidad)
+                    val baos = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos)
 
-                        profileRef.putBytes(baos.toByteArray())
-                            .addOnProgressListener {
-                                val progress = (100 * it.bytesTransferred / it.totalByteCount).toInt()
-                                it.run {
-                                    //binding.progressBar.progress = progress
-                                    //binding.tvProgress.text = String.format("%s%%", progress)
-                                }
+                    profileRef.putBytes(baos.toByteArray())
+                        .addOnProgressListener {
+                            val progress = (100 * it.bytesTransferred / it.totalByteCount).toInt()
+                            it.run {
+                                binding.progressBar.progress = progress
+                                binding.tvProgress.text = String.format("%s%%", progress)
                             }
-                            .addOnSuccessListener {
-                                it.storage.downloadUrl.addOnSuccessListener { downloadUrl ->
-                                    Log.i("URL", downloadUrl.toString())
-                                }
+                        }
+                        .addOnCompleteListener {
+                            binding.progressBar.visibility = View.INVISIBLE
+                            binding.tvProgress.text = ""
+                        }
+                        .addOnSuccessListener {
+                            it.storage.downloadUrl.addOnSuccessListener { downloadUrl ->
+                                Log.i("URL", downloadUrl.toString())
+                                updateUserProfile(binding, user, downloadUrl)
                             }
-                            .addOnFailureListener{
-                                Toast.makeText(activity, "Error al subir imagen.", Toast.LENGTH_SHORT).show()
-                            }
-                    }
+                        }
+                        .addOnFailureListener{
+                            Toast.makeText(activity, "Error al subir imagen.", Toast.LENGTH_SHORT).show()
+                        }
                 }
             }
         }
@@ -208,7 +209,7 @@ class ProfileFragment : Fragment() {
             } else {
                 MediaStore.Images.Media.getBitmap(it.contentResolver, uri)
             }
-            return getResizedImage(bitmap, 320)
+            return getResizedImage(bitmap, 256)
         }
         return null
     }
@@ -236,6 +237,10 @@ class ProfileFragment : Fragment() {
     //accion del retroceso (flecha atras en el titulo)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home){
+            //bug: título al volver atras, sin guardar los cambios
+            FirebaseAuth.getInstance().currentUser?.let { user ->
+                (activity as? MainAux)?.updateTitle(user)
+            }
             activity?.onBackPressed()
         }
         return super.onOptionsItemSelected(item)
