@@ -18,13 +18,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
         switchPreferenceCompat?.setOnPreferenceChangeListener { preference, newValue ->
             //verificar que sea de tipo boolean
             (newValue as? Boolean)?.let { isChecked ->
+                //creacion de topic
                 val topic = getString(R.string.settings_topic_offers)
                 if (isChecked){
+                    //suscripcion al topic
                     Firebase.messaging.subscribeToTopic(topic)
                         .addOnSuccessListener {
                             Toast.makeText(context, "Notificaciones activadas", Toast.LENGTH_SHORT).show()
                         }
                 } else {
+                    //desuscripcion al topic
                     Firebase.messaging.unsubscribeFromTopic(topic)
                         .addOnSuccessListener {
                             Toast.makeText(context, "Notificaciones desactivadas", Toast.LENGTH_SHORT).show()
