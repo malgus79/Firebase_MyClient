@@ -34,6 +34,7 @@ import com.myclient.detail.DetailFragment
 import com.myclient.entities.Product
 import com.myclient.order.OrderActivity
 import com.myclient.profile.ProfileFragment
+import com.myclient.settings.SettingsActivity
 
 class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
 
@@ -260,6 +261,7 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
     //config al hacer click en cerrar sesion
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            //opcion de salir
             R.id.action_sign_out -> {
                 AuthUI.getInstance().signOut(this)
                     .addOnSuccessListener {
@@ -287,6 +289,10 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                     .commit()
 
                 showButton(false)
+            }
+            //opcion de configuracion
+            R.id.action_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
             }
         }
         return super.onOptionsItemSelected(item)
