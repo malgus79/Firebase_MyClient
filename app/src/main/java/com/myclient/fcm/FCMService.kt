@@ -47,11 +47,12 @@ class FCMService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-//        if (remoteMessage.data.isNotEmpty()){
-//            sendNotificationByData(remoteMessage.data)
-//        }
+        //verificar que la notificacion DATA no sea nula (sendNotificationByTokens)
+        if (remoteMessage.data.isNotEmpty()){
+            sendNotificationByData(remoteMessage.data)
+        }
 
-        //verificar que la notificacion no sea nula
+        //verificar que la notificacion por TOPIC no sea nula (sendNotificationByTopic)
         remoteMessage.notification?.let {
             val imgUrl = it.imageUrl//"https://www.maxpixel.net/static/photo/1x/Marvel-Super-Hero-Flash-4281077.png"
             if (imgUrl == null){
@@ -118,49 +119,50 @@ class FCMService : FirebaseMessagingService() {
         notificationManager.notify(0, notificationBuilder.build())
     }
 
-//    private fun sendNotificationByData(data: Map<String, String>){
-//        val intent = Intent(this, OrderActivity::class.java)
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-//        val pendingIntent = PendingIntent.getActivity(this, 0, intent,
-//            PendingIntent.FLAG_ONE_SHOT)
-//
-//        val channelId = getString(R.string.notification_channel_id_default)
-//        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-//        val notificationBuilder = NotificationCompat.Builder(this, channelId)
-//            .setSmallIcon(R.drawable.ic_stat_name)
-//            .setContentTitle(data.get("title"))
-//            .setContentText(data.get("body"))
-//            .setAutoCancel(true)
-//            .setSound(defaultSoundUri)
-//            .setColor(ContextCompat.getColor(this, R.color.yellow_a400))
-//            .setContentIntent(pendingIntent)
-//            .setStyle(NotificationCompat.BigTextStyle()
-//                .bigText(data.get("body")))
-//
-//        val actionIntent = data.get(Constants.ACTION_INTENT)?.toInt()
-//        val orderId = data.get(Constants.PROP_ID)
-//        val status = data.get(Constants.PROP_STATUS)?.toInt()
-//        val trackIntent = Intent(this, OrderActivity::class.java).apply {
-//            putExtra(Constants.ACTION_INTENT, actionIntent) //1 = track
-//            putExtra(Constants.PROP_ID, orderId)
-//            putExtra(Constants.PROP_STATUS, status)
-//        }
-//        val trackPendingIntent = PendingIntent.getActivity(this, System.currentTimeMillis().toInt(),
-//            trackIntent, 0)
-//        val action = NotificationCompat.Action.Builder(R.drawable.ic_local_shipping, "Rastrear ahora",
-//            trackPendingIntent).build()
-//
-//        notificationBuilder.addAction(action)
-//
-//        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-//            val channel = NotificationChannel(channelId,
-//                getString(R.string.notification_channel_name_default),
-//                NotificationManager.IMPORTANCE_DEFAULT)
-//            notificationManager.createNotificationChannel(channel)
-//        }
-//
-//        notificationManager.notify(0, notificationBuilder.build())
-//    }
+    private fun sendNotificationByData(data: Map<String, String>){
+        val intent = Intent(this, OrderActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent,
+            PendingIntent.FLAG_ONE_SHOT)
+
+        val channelId = getString(R.string.notification_channel_id_default)
+        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.ic_stat_name)
+            .setContentTitle(data.get("title"))
+            .setContentText(data.get("body"))
+            .setAutoCancel(true)
+            .setSound(defaultSoundUri)
+            .setColor(ContextCompat.getColor(this, R.color.amber_500_dark))
+            .setContentIntent(pendingIntent)
+            .setStyle(NotificationCompat.BigTextStyle()
+                .bigText(data.get("body")))
+
+            //config extra de las notitifaciones
+        val actionIntent = data.get(Constants.ACTION_INTENT)?.toInt()
+        val orderId = data.get(Constants.PROP_ID)
+        val status = data.get(Constants.PROP_STATUS)?.toInt()
+        val trackIntent = Intent(this, OrderActivity::class.java).apply {
+            putExtra(Constants.ACTION_INTENT, actionIntent) //1 = track
+            putExtra(Constants.PROP_ID, orderId)
+            putExtra(Constants.PROP_STATUS, status)
+        }
+        val trackPendingIntent = PendingIntent.getActivity(this, System.currentTimeMillis().toInt(),
+            trackIntent, 0)
+        val action = NotificationCompat.Action.Builder(R.drawable.ic_local_shipping, "Rastrear ahora",
+            trackPendingIntent).build()
+
+        notificationBuilder.addAction(action)
+
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val channel = NotificationChannel(channelId,
+                getString(R.string.notification_channel_name_default),
+                NotificationManager.IMPORTANCE_DEFAULT)
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        notificationManager.notify(0, notificationBuilder.build())
+    }
 }

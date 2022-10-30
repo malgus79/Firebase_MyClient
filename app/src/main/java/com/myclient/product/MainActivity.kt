@@ -26,6 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.myclient.Constants
 import com.myclient.R
 import com.myclient.cart.CartFragment
@@ -84,11 +85,11 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                             .add(tokenMap)
                             .addOnSuccessListener {
                                 Log.i("registered token", token)
-                                //limpiar las preferencias
+                              /*  //limpiar las preferencias
                                 preferences.edit {
                                     putString(Constants.PROP_TOKEN, null)
                                         .apply()
-                                }
+                                }*/
                             }
                             .addOnFailureListener {
                                 Log.i("no registered token", token)
@@ -124,7 +125,7 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
         configAnalytics()
 
 
-/**
+
 
         //fcm
         //extraer el token de forma manual y enviarlo al servidor
@@ -142,7 +143,6 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
             }
         }
 
-*/
 
     }
 
