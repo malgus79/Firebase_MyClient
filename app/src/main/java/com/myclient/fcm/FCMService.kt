@@ -123,7 +123,7 @@ class FCMService : FirebaseMessagingService() {
         val intent = Intent(this, OrderActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(this, 0, intent,
-            PendingIntent.FLAG_ONE_SHOT)
+            PendingIntent.FLAG_MUTABLE)
 
         val channelId = getString(R.string.notification_channel_id_default)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
