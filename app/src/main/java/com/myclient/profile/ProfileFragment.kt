@@ -209,7 +209,7 @@ class ProfileFragment : Fragment() {
             } else {
                 MediaStore.Images.Media.getBitmap(it.contentResolver, uri)
             }
-            return getResizedImage(bitmap, 256)
+            return getResizedImage(bitmap, 150)
         }
         return null
     }
