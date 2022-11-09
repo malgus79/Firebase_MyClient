@@ -14,7 +14,7 @@
         android:clickable="true"
         android:focusable="true">
 
-        <ImageView
+        <!--<ImageView
             android:id="@+id/imgProduct"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -22,7 +22,16 @@
             app:layout_constraintDimensionRatio="16:9"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />-->
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/vpProduct"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintDimensionRatio="16:9"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvName"
@@ -33,7 +42,7 @@
             android:textAppearance="?attr/textAppearanceHeadline5"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imgProduct"
+            app:layout_constraintTop_toBottomOf="@id/vpProduct"
             tools:text="Nombre del producto" />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
