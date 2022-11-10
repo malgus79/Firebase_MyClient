@@ -48,7 +48,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     // Import the BoM for the Firebase platform
-    implementation platform('com.google.firebase:firebase-bom:30.5.0')
+    implementation platform('com.google.firebase:firebase-bom:31.0.2')
     // FirebaseUI for Firebase Auth
     implementation 'com.firebaseui:firebase-ui-auth:8.0.2'
     // Cloud Firestore
@@ -65,6 +65,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage-ktx'
     // FirebaseUI for Cloud Storage
     implementation 'com.firebaseui:firebase-ui-storage:8.0.2'
+    // Remote Config
+    implementation 'com.google.firebase:firebase-config-ktx'
 
     //Preferences
     implementation 'androidx.preference:preference:1.1.0-alpha04'

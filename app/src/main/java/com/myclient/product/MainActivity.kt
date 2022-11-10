@@ -1,5 +1,6 @@
 package com.myclient.product
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -16,6 +17,9 @@ import com.firebase.ui.auth.AuthMethodPickerLayout
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
@@ -27,6 +31,8 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.myclient.Constants
 import com.myclient.R
 import com.myclient.cart.CartFragment
@@ -119,6 +125,8 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        configToolbar()
+        configRemoteConfig()
         configAuth()
         configRecyclerView()
         configButtons()
@@ -142,8 +150,50 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                 Log.i("get token fail", task.exception.toString())
             }
         }
+    }
 
+    private fun configToolbar() {
+        setSupportActionBar(binding.toolbar)
+    }
 
+    //@SuppressLint("UnsafeExperimentalUsageError")
+    private fun configRemoteConfig() {
+        val remoteConfig = Firebase.remoteConfig
+
+        val configSettings = remoteConfigSettings {
+            //minimumFetchIntervalInSeconds = 3600// 3600 = 1s*60s*60m = 1h
+            minimumFetchIntervalInSeconds = 5  //5 segundos
+        }
+
+        remoteConfig.setConfigSettingsAsync(configSettings)
+
+        remoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)
+
+        //activar y solicitar los cambios desde el servidor
+        remoteConfig.fetchAndActivate()
+            .addOnSuccessListener {
+                Snackbar.make(binding.root, "Datos locales/remotos", Snackbar.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                Snackbar.make(binding.root, "Datos locales", Snackbar.LENGTH_SHORT).show()
+            }
+            .addOnCompleteListener {
+                //extraccion de valores
+                if (it.isSuccessful){
+                    val isPromoDay = remoteConfig.getBoolean("isPromoDay")
+                    val promCounter = remoteConfig.getLong("promCounter")
+                    val percentaje = remoteConfig.getDouble("percentaje")
+                    val photoUrl = remoteConfig.getString("photoUrl")
+                    val message = remoteConfig.getString("message")
+
+                    if (isPromoDay){
+                        Snackbar.make(binding.root, "Hay promoción", Snackbar.LENGTH_SHORT).show()
+//                        val badge = BadgeDrawable.create(this)
+//                        BadgeUtils.attachBadgeDrawable(badge, binding.toolbar, R.id.action_promo)
+//                        badge.number = promCounter.toInt()
+                    }
+                }
+            }
     }
 
     private fun configAuth() {

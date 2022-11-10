@@ -15,4 +15,13 @@
     <style name="PreferencesTheme" parent="Theme.MyClient">
         <item name="colorSecondary">@color/amber_500_dark</item>
     </style>
+
+    <style name="Theme.MyClient.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.MyClient.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="Theme.MyClient.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
 </resources>
