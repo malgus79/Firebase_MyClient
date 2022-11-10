@@ -187,10 +187,10 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                     val message = remoteConfig.getString("message")
 
                     if (isPromoDay){
-                        Snackbar.make(binding.root, "Hay promoción", Snackbar.LENGTH_SHORT).show()
-//                        val badge = BadgeDrawable.create(this)
-//                        BadgeUtils.attachBadgeDrawable(badge, binding.toolbar, R.id.action_promo)
-//                        badge.number = promCounter.toInt()
+                        //Snackbar.make(binding.root, "Hay promoción", Snackbar.LENGTH_SHORT).show()
+                        val badge = BadgeDrawable.create(this)
+                        BadgeUtils.attachBadgeDrawable(badge, binding.toolbar, R.id.action_promo)
+                        badge.number = promCounter.toInt()
                     }
                 }
             }
@@ -343,6 +343,17 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
             //opcion de configuracion
             R.id.action_settings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
+            }
+            R.id.action_promo -> {
+                Snackbar.make(binding.root, "Hay promoción", Snackbar.LENGTH_SHORT).show()
+//                val fragment = PromoFragment()
+//                supportFragmentManager
+//                    .beginTransaction()
+//                    .add(R.id.containerMain, fragment)
+//                    .addToBackStack(null)
+//                    .commit()
+//
+//                showButton(false)
             }
         }
         return super.onOptionsItemSelected(item)

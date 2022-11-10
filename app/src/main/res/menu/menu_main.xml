@@ -18,7 +18,13 @@
 
     <item
         android:id="@+id/action_order_history"
-        android:title=""
+        android:title="@string/product_menu_history"
         android:icon="@drawable/ic_history"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/action_promo"
+        android:title=""
+        android:icon="@drawable/ic_local_offer"
         app:showAsAction="ifRoom"/>
 </menu>
