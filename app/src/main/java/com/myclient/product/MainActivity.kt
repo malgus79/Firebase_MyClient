@@ -157,6 +157,7 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
     }
 
     //@SuppressLint("UnsafeExperimentalUsageError")
+    @SuppressLint("UnsafeOptInUsageError")
     private fun configRemoteConfig() {
         val remoteConfig = Firebase.remoteConfig
 
