@@ -41,6 +41,7 @@ import com.myclient.detail.DetailFragment
 import com.myclient.entities.Product
 import com.myclient.order.OrderActivity
 import com.myclient.profile.ProfileFragment
+import com.myclient.promo.PromoFragment
 import com.myclient.settings.SettingsActivity
 
 class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
@@ -346,15 +347,15 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                 startActivity(Intent(this, SettingsActivity::class.java))
             }
             R.id.action_promo -> {
-                Snackbar.make(binding.root, "Hay promoción", Snackbar.LENGTH_SHORT).show()
-//                val fragment = PromoFragment()
-//                supportFragmentManager
-//                    .beginTransaction()
-//                    .add(R.id.containerMain, fragment)
-//                    .addToBackStack(null)
-//                    .commit()
-//
-//                showButton(false)
+                //Snackbar.make(binding.root, "Hay promoción", Snackbar.LENGTH_SHORT).show()
+                val fragment = PromoFragment()
+                supportFragmentManager
+                    .beginTransaction()
+                    .add(R.id.containerMain, fragment)
+                    .addToBackStack(null)
+                    .commit()
+
+                showButton(false)
             }
         }
         return super.onOptionsItemSelected(item)
