@@ -173,12 +173,12 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
 
         //activar y solicitar los cambios desde el servidor
         remoteConfig.fetchAndActivate()
-            .addOnSuccessListener {
+            /*.addOnSuccessListener {
                 Snackbar.make(binding.root, "Datos locales/remotos", Snackbar.LENGTH_SHORT).show()
             }
             .addOnFailureListener {
                 Snackbar.make(binding.root, "Datos locales", Snackbar.LENGTH_SHORT).show()
-            }
+            }*/
             .addOnCompleteListener {
                 //extraccion de valores
                 if (it.isSuccessful){
