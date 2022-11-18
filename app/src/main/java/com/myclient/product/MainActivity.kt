@@ -499,6 +499,7 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                     }
                 } catch (e:Exception) {
                     Toast.makeText(this, "No hay mas productos para mostrar", Toast.LENGTH_SHORT).show()
+                    adapter.hideLoadMore()
                 }
             }
         }

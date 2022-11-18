@@ -16,6 +16,7 @@ class ProductAdapter(private val productList: MutableList<Product>,
     RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
 
     private lateinit var context: Context
+    private var isFinish = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         context = parent.context
@@ -33,6 +34,7 @@ class ProductAdapter(private val productList: MutableList<Product>,
         if(product.id == null){
             holder.binding.containerProduct.visibility = View.GONE
             holder.binding.btnMore.visibility = View.VISIBLE
+            holder.binding.btnMore.isEnabled = !isFinish
         } else {
             holder.binding.containerProduct.visibility = View.VISIBLE
             holder.binding.btnMore.visibility = View.GONE
@@ -82,6 +84,11 @@ class ProductAdapter(private val productList: MutableList<Product>,
             productList.removeAt(index)
             notifyItemRemoved(index)
         }
+    }
+
+    fun hideLoadMore() {
+        isFinish = true
+        notifyItemChanged(productList.size-1)
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
